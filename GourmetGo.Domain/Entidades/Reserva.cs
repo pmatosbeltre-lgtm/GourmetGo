@@ -1,8 +1,8 @@
 ﻿namespace GourmetGo.Domain;
 
-public class Class1
+public class Reserva
 {
-	public Class1()
+	public Reserva()
 	{
 	}
 }
