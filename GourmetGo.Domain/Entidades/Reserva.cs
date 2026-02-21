@@ -1,4 +1,4 @@
-﻿using System;
+﻿namespace GourmetGo.Domain;
 
 public class Class1
 {

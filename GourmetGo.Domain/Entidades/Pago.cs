@@ -1,8 +1,11 @@
-﻿using System;
+﻿namespace GourmetGo.Domain;
 
-public class Class1
+public class Pago
 {
-	public Class1()
-	{
-	}
+    public int Id { get; set; }
+    public decimal Monto { get; set; }
+    public DateTime Fecha { get; set; }
+    public string MetodoPago { get; set; } = string.Empty;
+    public int PedidoId { get; set; }
 }
+
