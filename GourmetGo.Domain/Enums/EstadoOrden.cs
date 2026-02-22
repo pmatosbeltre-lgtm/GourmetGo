@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace GourmetGo.Domain.Enums;
 
-namespace GourmetGo.Domain.Enums
+public enum EstadoOrden
 {
-    internal class EstadoOrden
-    {
-    }
+    Pendiente = 1,
+    Aceptada = 2,
+    EnPreparacion = 3,
+    Lista = 4,
+    Entregada = 5,
+    Cancelada = 6
 }
