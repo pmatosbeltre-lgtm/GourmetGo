@@ -1,8 +1,14 @@
-﻿using System;
+﻿using GourmetGo.Domain.Base;
 
-public class Auditoria
+namespace GourmetGo.Domain.Entidades;
+
+public class Auditoria : BaseEntity
 {
-	public Auditoria()
-	{
-	}
+    public string Accion { get; private set; }
+
+    public DateTime Fecha { get; private set; }
+
+    public int UsuarioId { get; private set; }
+
+    public Usuario Usuario { get; private set; }
 }

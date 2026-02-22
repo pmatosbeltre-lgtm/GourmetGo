@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GourmetGo.Domain.Base;
+using GourmetGo.Domain.Entidades.Catalogo;
 
-namespace GourmetGo.Domain.Entidades.Operaciones
+namespace GourmetGo.Domain.Entidades;
+
+public class DetalleOrden : BaseEntity
 {
-    internal class DetalleOrden
-    {
-    }
+    public int OrdenId { get; private set; }
+
+    public Orden Orden { get; private set; }
+
+    public int PlatoId { get; private set; }
+
+    public Plato Plato { get; private set; }
+
+    public int Cantidad { get; private set; }
+
+    public decimal PrecioUnitario { get; private set; }
 }

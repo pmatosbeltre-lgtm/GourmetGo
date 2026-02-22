@@ -1,11 +1,19 @@
-﻿namespace GourmetGo.Domain.Entidades.Operaciones;
+﻿using GourmetGo.Domain.Base;
+using GourmetGo.Domain.Enums;
 
-public class Pago
+namespace GourmetGo.Domain.Entidades;
+
+public class Pago : BaseEntity
 {
-    public int Id { get; set; }
-    public decimal Monto { get; set; }
-    public DateTime Fecha { get; set; }
-    public string MetodoPago { get; set; } = string.Empty;
-    public int PedidoId { get; set; }
-}
+    public decimal Monto { get; private set; }
 
+    public string MetodoPago { get; private set; }
+
+    public EstadoPago EstadoPago { get; private set; }
+
+    public DateTime Fecha { get; private set; }
+
+    public int OrdenId { get; private set; }
+
+    public Orden Orden { get; private set; }
+}
