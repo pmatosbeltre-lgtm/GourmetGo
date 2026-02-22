@@ -1,4 +1,4 @@
-﻿namespace GourmetGo.Domain;
+﻿namespace GourmetGo.Domain.Entidades.Operaciones;
 
 public class Pago
 {

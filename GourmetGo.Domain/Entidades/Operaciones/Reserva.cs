@@ -1,4 +1,4 @@
-﻿namespace GourmetGo.Domain;
+﻿using System;
 
 public class Reserva
 {
