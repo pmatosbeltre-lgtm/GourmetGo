@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace GourmetGo.Domain.Enums;
 
-namespace GourmetGo.Domain.Enums
+public enum RolUsuario
 {
-    internal class RolUsuario
-    {
-    }
+    Cliente = 1,
+    Propietario = 2,
+    Administrador = 3
 }
