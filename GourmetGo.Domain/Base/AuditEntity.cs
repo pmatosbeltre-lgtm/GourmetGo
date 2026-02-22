@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GourmetGo.Domain.Base
+﻿namespace GourmetGo.Domain.Base
 {
-    internal class AuditEntity
+    public abstract class AuditEntity: BaseEntity
     {
+        public DateTime FechaCreacion { get; protected set; }
+
+        public DateTime? FechaModificacion { get; protected set; }
+
+        protected AuditEntity ()
+        {
+            FechaCreacion = DateTime.UtcNow;
+        }
+
+        public void MarcarComoModificada()
+        {
+            FechaModificacion = DateTime.UtcNow;
+        }
     }
 }
