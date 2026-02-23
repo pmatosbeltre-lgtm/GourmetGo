@@ -1,6 +1,5 @@
 ﻿using GourmetGo.Domain.Base;
 using GourmetGo.Domain.Entidades.Catalogo;
-using GourmetGo.Domain.Entidades.Operaciones;
 using GourmetGo.Domain.Enums;
 
 namespace GourmetGo.Domain.Entidades;
