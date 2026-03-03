@@ -1,12 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using GourmetGo.Domain.Entidades;
+using GourmetGo.Domain.Interfaces;
+using GourmetGo.Persistence.Context;
 
-namespace GourtmetGo.Persistence.Repositorios.Auditoria
+namespace GourmetGo.Persistence.Repositories.Seguridad;
+
+public class AuditoriaRepositorio : IAuditoriaRepositorio
 {
-    internal class AuditoriaRepositorio
+    private readonly GourmetGoContext _context;
+
+    public AuditoriaRepositorio(GourmetGoContext context)
     {
+        _context = context;
+    }
+
+    public async Task AgregarAsync(Auditoria auditoria)
+    {
+        await _context.Auditorias.AddAsync(auditoria);
+        await _context.SaveChangesAsync();
     }
 }

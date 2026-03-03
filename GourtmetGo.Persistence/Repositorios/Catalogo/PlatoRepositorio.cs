@@ -1,12 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using GourmetGo.Domain.Entidades.Catalogo;
+using GourmetGo.Domain.Interfaces;
+using GourmetGo.Persistence.Context;
 
-namespace GourtmetGo.Persistence.Repositorios.Catalogo
+namespace GourmetGo.Persistence.Repositories.Catalogo;
+
+public class PlatoRepositorio : IPlatoRepositorio
 {
-    internal class PlatoRepositorio
+    private readonly GourmetGoContext _context;
+
+    public PlatoRepositorio(GourmetGoContext context)
     {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<Plato>> ObtenerPorMenuAsync(int menuId)
+    {
+        return await _context.Platos
+            .Where(p => p.MenuId == menuId)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task AgregarAsync(Plato plato)
+    {
+        await _context.Platos.AddAsync(plato);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task ActualizarAsync(Plato plato)
+    {
+        _context.Platos.Update(plato);
+        await _context.SaveChangesAsync();
     }
 }
