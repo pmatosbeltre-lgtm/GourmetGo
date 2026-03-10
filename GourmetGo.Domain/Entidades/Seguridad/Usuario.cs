@@ -20,7 +20,7 @@ public class Usuario : BaseEntity
     public ICollection<Orden> Ordenes { get; private set; }
     public ICollection<Reseña> Reseñas { get; private set; }
     public ICollection<Notificacion> Notificaciones { get; private set; }
-    public ICollection<Auditoria> Auditorias { get; private set; }
+    public ICollection<AuditoriaEntity> Auditorias { get; private set; }
 
     // Validaciones
     public Usuario(string nombre, string correo, string contrasena, RolUsuario rol)
@@ -43,6 +43,6 @@ public class Usuario : BaseEntity
         Ordenes = new List<Orden>();
         Reseñas = new List<Reseña>();
         Notificaciones = new List<Notificacion>();
-        Auditorias = new List<Auditoria>();
+        Auditorias = new List<AuditoriaEntity>();
     }
 }
