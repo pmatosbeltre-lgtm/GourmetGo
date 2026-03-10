@@ -2,7 +2,7 @@
 
 namespace GourmetGo.Application.DTOs.Seguridad
 {
-    public class UserDTO
+    public class UsuarioDTO
     {
         public int Id { get; set; }
 

@@ -1,7 +1,7 @@
 ﻿ using GourmetGo.Domain.Enums;
 namespace GourmetGo.Application.Dtos.Seguridad
 {
-    public class CreateUserDTO
+    public class CreateUsuarioDTO
     {
         public string Nombre { get; set; }
 

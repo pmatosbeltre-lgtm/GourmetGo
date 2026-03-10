@@ -7,23 +7,23 @@ using GourmetGo.Domain.Interfaces;
 
 namespace GourmetGo.Application.Services
 {
-    public class UserService : BaseService, IUserService
+    public class UsuarioService : BaseService, IUsuarioService
     {
         private readonly IUsuarioRepositorio _usuarioRepositorio;
 
-        public UserService(IUsuarioRepositorio usuarioRepositorio)
+        public UsuarioService(IUsuarioRepositorio usuarioRepositorio)
         {
             _usuarioRepositorio = usuarioRepositorio;
         }
 
-        public async Task<Result<UserDTO>> CrearUsuario(CreateUserDTO dto)
+        public async Task<Result<UsuarioDTO>> CrearUsuario(CreateUsuarioDTO dto)
         {
             try
             {
                 var usuarioExistente = await _usuarioRepositorio.ObtenerPorCorreoAsync(dto.Correo);
 
                 if (usuarioExistente != null)
-                    return Result<UserDTO>.Fail("Ya existe un usuario con ese correo.");
+                    return Result<UsuarioDTO>.Fail("Ya existe un usuario con ese correo.");
 
                 var usuario = new Usuario(
                     dto.Nombre,
@@ -34,7 +34,7 @@ namespace GourmetGo.Application.Services
 
                 await _usuarioRepositorio.AgregarAsync(usuario);
 
-                var userDto = new UserDTO
+                var userDto = new UsuarioDTO
                 {
                     Id = usuario.Id,
                     Nombre = usuario.Nombre,
@@ -44,22 +44,22 @@ namespace GourmetGo.Application.Services
                     FechaRegistro = usuario.FechaRegistro
                 };
 
-                return Result<UserDTO>.Ok(userDto, "Usuario creado correctamente");
+                return Result<UsuarioDTO>.Ok(userDto, "Usuario creado correctamente");
             }
             catch (Exception ex)
             {
-                return Result<UserDTO>.Fail($"Error al crear el usuario: {ex.Message}");
+                return Result<UsuarioDTO>.Fail($"Error al crear el usuario: {ex.Message}");
             }
         }
 
-        public async Task<Result<UserDTO>> ObtenerUsuario(int id)
+        public async Task<Result<UsuarioDTO>> ObtenerUsuario(int id)
         {
             var usuario = await _usuarioRepositorio.ObtenerPorIdAsync(id);
 
             if (usuario == null)
-                return Result<UserDTO>.Fail("Usuario no encontrado");
+                return Result<UsuarioDTO>.Fail("Usuario no encontrado");
 
-            var dto = new UserDTO
+            var dto = new UsuarioDTO
             {
                 Id = usuario.Id,
                 Nombre = usuario.Nombre,
@@ -69,17 +69,17 @@ namespace GourmetGo.Application.Services
                 FechaRegistro = usuario.FechaRegistro
             };
 
-            return Result<UserDTO>.Ok(dto);
+            return Result<UsuarioDTO>.Ok(dto);
         }
 
-        public async Task<Result<UserDTO>> ObtenerUsuarioPorCorreo(string correo)
+        public async Task<Result<UsuarioDTO>> ObtenerUsuarioPorCorreo(string correo)
         {
             var usuario = await _usuarioRepositorio.ObtenerPorCorreoAsync(correo);
 
             if (usuario == null)
-                return Result<UserDTO>.Fail("Usuario no encontrado");
+                return Result<UsuarioDTO>.Fail("Usuario no encontrado");
 
-            var dto = new UserDTO
+            var dto = new UsuarioDTO
             {
                 Id = usuario.Id,
                 Nombre = usuario.Nombre,
@@ -89,7 +89,7 @@ namespace GourmetGo.Application.Services
                 FechaRegistro = usuario.FechaRegistro
             };
 
-            return Result<UserDTO>.Ok(dto);
+            return Result<UsuarioDTO>.Ok(dto);
         }
     }
 }
