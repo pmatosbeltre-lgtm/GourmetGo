@@ -8,6 +8,12 @@ using GourmetGo.Persistence.Repositorios.Auditoria;
 
 using GourmetGo.Application.Interfaces;
 using GourmetGo.Application.Services;
+using GourmetGo.Application.Interfaces.Seguridad;
+using GourmetGo.Application.Services.Seguridad;
+using GourmetGo.Application.Interfaces.Operaciones;
+using GourmetGo.Application.Services.Operaciones;
+using GourmetGo.Application.Interfaces.Social;
+using GourmetGo.Application.Services.Social;
 
 using GourmetGo.Persistence.Context;
 
@@ -39,7 +45,13 @@ public static class DependencyInjection
         services.AddScoped<IAuditoriaRepositorio, AuditoriaResopositorio();
 
         //Servicios (aplicacion )
-        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUsuarioService, UsuarioService>();
+        services.AddScoped<IOrdenService, OrdenService>();
+        services.AddScoped<IReservaService, ReservaService>();
+        services.AddScoped<IPagoService, PagoService>();
+        services.AddScoped<INotificacionService, NotificacionService>();
+        services.AddScoped<IResenaService, ResenaService>();
+
         return services;
     }
 }
