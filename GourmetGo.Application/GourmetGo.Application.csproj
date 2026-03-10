@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GourmetGo.Domain\GourmetGo.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
