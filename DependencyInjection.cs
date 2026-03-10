@@ -6,6 +6,9 @@ using GourmetGo.Persistence.Repositorios.Catalogo;
 using GourmetGo.Persistence.Repositorios.Social;
 using GourmetGo.Persistence.Repositorios.Auditoria;
 
+using GourmetGo.Application.Interfaces;
+using GourmetGo.Application.Services;
+
 using GourmetGo.Persistence.Context;
 
 namespace GourmetGo.IOC;
@@ -35,6 +38,8 @@ public static class DependencyInjection
         //Repositorios de Auditoria
         services.AddScoped<IAuditoriaRepositorio, AuditoriaResopositorio();
 
+        //Servicios (aplicacion )
+        services.AddScoped<IUserService, UserService>();
         return services;
     }
 }
