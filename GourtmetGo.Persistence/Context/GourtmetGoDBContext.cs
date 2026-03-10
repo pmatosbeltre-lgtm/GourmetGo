@@ -22,7 +22,7 @@ public class GourmetGoContext : DbContext
     public DbSet<Restaurante> Restaurantes => Set<Restaurante>();
     public DbSet<Notificacion> Notificaciones => Set<Notificacion>();
     public DbSet<Reseña> Resenas => Set<Reseña>();
-    public DbSet<Auditoria> Auditorias => Set<Auditoria>();
+    public DbSet<AuditoriaEntity> Auditorias => Set<AuditoriaEntity>();
 }
 
    

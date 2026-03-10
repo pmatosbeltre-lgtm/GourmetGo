@@ -4,5 +4,5 @@ namespace GourmetGo.Domain.Interfaces;
 
 public interface IAuditoriaRepositorio
 {
-    Task AgregarAsync(Auditoria auditoria);
+    Task AgregarAsync(AuditoriaEntity auditoria);
 }
