@@ -16,7 +16,7 @@ public class AuditoriaRepositorio : IAuditoriaRepositorio
 
     public async Task AgregarAsync(AuditoriaEntity auditoria)
     {
-        await _context.Auditorias.AddAsync(auditoria);
+        await _context.Auditoria.AddAsync(auditoria);
         await _context.SaveChangesAsync();
     }
 }

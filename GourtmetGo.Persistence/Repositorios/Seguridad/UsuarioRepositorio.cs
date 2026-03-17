@@ -19,7 +19,7 @@ public class UsuarioRepositorio : IUsuarioRepositorio
         if (id <= 0)
             throw new ArgumentException("El id debe ser mayor que cero.");
 
-        return await _context.Usuarios
+        return await _context.Usuario
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id);
     }
@@ -29,7 +29,7 @@ public class UsuarioRepositorio : IUsuarioRepositorio
         if (string.IsNullOrWhiteSpace(correo))
             throw new ArgumentException("El correo no puede estar vacío.");
 
-        return await _context.Usuarios
+        return await _context.Usuario
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Correo == correo);
     }
@@ -41,7 +41,7 @@ public class UsuarioRepositorio : IUsuarioRepositorio
 
         try
         {
-            await _context.Usuarios.AddAsync(usuario);
+            await _context.Usuario.AddAsync(usuario);
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateException ex)
@@ -57,7 +57,7 @@ public class UsuarioRepositorio : IUsuarioRepositorio
 
         try
         {
-            _context.Usuarios.Update(usuario);
+            _context.Usuario.Update(usuario);
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateException ex)

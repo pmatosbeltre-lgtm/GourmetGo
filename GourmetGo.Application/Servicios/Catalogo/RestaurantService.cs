@@ -33,6 +33,9 @@ public class RestauranteService : BaseService, IRestauranteService
 
     public async Task<Result<RestauranteDTO>> ObtenerPorIdAsync(int id)
     {
+        if (id <= 0)
+            return Result<RestauranteDTO>.Fail("El ID del restaurante no es válido.");
+
         var restaurante = await _repositorio.ObtenerPorIdAsync(id);
 
         if (restaurante == null)
@@ -51,6 +54,18 @@ public class RestauranteService : BaseService, IRestauranteService
 
     public async Task<Result<string>> CrearAsync(CreateRestauranteDTO dto)
     {
+        if (dto == null)
+            return Result<string>.Fail("La información del restaurante no puede estar vacía.");
+
+        if (string.IsNullOrWhiteSpace(dto.Nombre))
+            return Result<string>.Fail("El nombre del restaurante es obligatorio.");
+
+        if (string.IsNullOrWhiteSpace(dto.Direccion))
+            return Result<string>.Fail("La dirección es obligatoria.");
+
+        if (dto.Capacidad <= 0)
+            return Result<string>.Fail("La capacidad del restaurante debe ser mayor a cero.");
+
         var restaurante = new Restaurante(
             dto.Nombre,
             dto.Direccion,

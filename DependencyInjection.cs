@@ -34,7 +34,7 @@ public static class DependencyInjection
 
         //Repositorios de Catalogo
         services.AddScoped<IMenuRepositorio, MenuRepositorio>();
-        services.AddScoped<IPlatoRepositoio, PlatoRepositorio>();
+        services.AddScoped<IPlatoRepositorio, PlatoRepositorio>();
         services.AddScoped<IRestauranteRepositorio, RestauranteRepositorio>();
 
         //Repositorios de Social
@@ -42,7 +42,7 @@ public static class DependencyInjection
         services.AddScoped<IResenaRepositorio, ReseñaRepositorio>();
 
         //Repositorios de Auditoria
-        services.AddScoped<IAuditoriaRepositorio, AuditoriaResopositorio();
+        services.AddScoped<IAuditoriaRepositorio, AuditoriaRepositorio>();
 
         //Servicios (aplicacion )
         services.AddScoped<IUsuarioService, UsuarioService>();
@@ -51,6 +51,7 @@ public static class DependencyInjection
         services.AddScoped<IPagoService, PagoService>();
         services.AddScoped<INotificacionService, NotificacionService>();
         services.AddScoped<IResenaService, ResenaService>();
+
 
         return services;
     }
