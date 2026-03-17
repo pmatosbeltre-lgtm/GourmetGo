@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GourmetGo.Application\GourmetGo.Application.csproj" />
     <ProjectReference Include="..\GourmetGo.Domain\GourmetGo.Domain.csproj" />
     <ProjectReference Include="..\GourtmetGo.Persistence\GourtmetGo.Persistence.csproj" />
   </ItemGroup>
