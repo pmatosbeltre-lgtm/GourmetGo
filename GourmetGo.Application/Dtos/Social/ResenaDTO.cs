@@ -6,7 +6,7 @@ public class ResenaDTO
 
     public int Calificacion { get; set; }
 
-    public string Comentario { get; set; }
+    public string Comentario { get; set; } = string.Empty;
 
     public DateTime Fecha { get; set; }
 

@@ -13,7 +13,7 @@ public class Pago : BaseEntity
     public DateTime Fecha { get; private set; }
 
     public int OrdenId { get; private set; }
-    public Orden Orden { get; private set; }
+    public Orden? Orden { get; private set; }
 
     // Validaciones
     public Pago(decimal monto, string metodoPago, int ordenId)

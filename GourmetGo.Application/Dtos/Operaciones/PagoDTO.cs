@@ -8,7 +8,7 @@ public class PagoDTO
 
     public decimal Monto { get; set; }
 
-    public string MetodoPago { get; set; }
+    public string MetodoPago { get; set; } = string.Empty;
 
     public EstadoPago EstadoPago { get; set; }
 

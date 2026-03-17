@@ -14,12 +14,12 @@ public class Orden : BaseEntity
     public DateTime FechaCreacion { get; private set; }
    
     public int UsuarioId { get; private set; }
-    public Usuario Usuario { get; private set; }
+    public Usuario? Usuario { get; private set; }
    
     public int RestauranteId { get; private set; }
-    public Restaurante Restaurante { get; private set; }
+    public Restaurante? Restaurante { get; private set; }
    
-    public Pago Pago { get; private set; }
+    public Pago? Pago { get; private set; }
 
     public ICollection<DetalleOrden> Detalles { get; private set; }
 

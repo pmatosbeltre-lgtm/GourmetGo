@@ -10,7 +10,7 @@ public class Notificacion : BaseEntity
     public DateTime FechaEnvio { get; private set; }
 
     public int UsuarioId { get; private set; }
-    public Usuario Usuario { get; private set; }
+    public Usuario? Usuario { get; private set; }
 
     // Validaciones
     public Notificacion(string tipo, string mensaje, int usuarioId)

@@ -1,11 +1,10 @@
-﻿
-namespace GourmetGo.Application.Base
+﻿namespace GourmetGo.Application.Base
 {
     public class Result<T>
     {
         public bool Success { get; set; }
-        public string Message { get; set; }
-        public T Data { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public T Data { get; set; } = default!;
         public static Result<T> Ok(T data, string message = "Operacion exitosa")
         {
             return new Result<T>
@@ -21,7 +20,7 @@ namespace GourmetGo.Application.Base
             {
                 Success = false,
                 Message = message,
-                Data = default
+                Data = default!
             };
         }
     }

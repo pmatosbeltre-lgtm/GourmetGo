@@ -19,7 +19,7 @@ public class PagoRepositorio : IPagoRepositorio
         if (ordenId <= 0)
             throw new ArgumentException("El id de la orden debe ser válido.");
 
-        return await _context.Pagos
+        return await _context.Pago
             .Include(p => p.Orden)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.OrdenId == ordenId);
@@ -32,7 +32,7 @@ public class PagoRepositorio : IPagoRepositorio
 
         try
         {
-            await _context.Pagos.AddAsync(pago);
+            await _context.Pago.AddAsync(pago);
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateException ex)
