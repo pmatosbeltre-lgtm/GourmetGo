@@ -7,6 +7,7 @@ namespace GourmetGo.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize] 
     public class ReservaController : ControllerBase
     {
         private readonly IReservaService _reservaService;
@@ -17,58 +18,39 @@ namespace GourmetGo.Web.Controllers
         }
 
         // Crear una reserva
-       
         [HttpPost]
-       
         public async Task<IActionResult> Crear([FromBody] CreateReservaDTO dto)
         {
-            try
-            {
-                var reserva = await _reservaService.CrearReservaAsync(dto);
-                return Ok(reserva);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { mensaje = ex.Message });
-            }
+            var result = await _reservaService.CrearReservaAsync(dto);
+
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
         }
 
         // Obtener reserva por ID
-       
         [HttpGet("{id}")]
-       
         public async Task<IActionResult> ObtenerPorId(int id)
         {
-            try
-            {
-                var reserva = await _reservaService.ObtenerReservaPorIdAsync(id);
+            var result = await _reservaService.ObtenerReservaPorIdAsync(id);
 
-                if (reserva == null)
-                    return NotFound(new { mensaje = "Reserva no encontrada" });
+            if (!result.Success)
+                return NotFound(result); 
 
-                return Ok(reserva);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { mensaje = ex.Message });
-            }
+            return Ok(result);
         }
 
         // Obtener reservas por restaurante
-        
         [HttpGet("restaurante/{restauranteId}")]
-        
         public async Task<IActionResult> ObtenerPorRestaurante(int restauranteId)
         {
-            try
-            {
-                var reservas = await _reservaService.ObtenerReservasPorRestauranteAsync(restauranteId);
-                return Ok(reservas);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { mensaje = ex.Message });
-            }
+            var result = await _reservaService.ObtenerReservasPorRestauranteAsync(restauranteId);
+
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
         }
     }
 }

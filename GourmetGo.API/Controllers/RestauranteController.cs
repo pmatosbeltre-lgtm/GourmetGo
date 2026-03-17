@@ -8,6 +8,7 @@ namespace GourmetGo.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class RestauranteController : ControllerBase
     {
         private readonly IRestauranteService _restauranteService;
@@ -18,20 +19,17 @@ namespace GourmetGo.Web.Controllers
         }
 
         // Obtener todos los restaurantes
-        
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ObtenerTodos()
         {
             var result = await _restauranteService.ObtenerTodosAsync();
-
             return Ok(result);
         }
 
-        // Obtener restaurante por ID
-        
+        // Obtener restaurante por ID 
         [HttpGet("{id}")]
-        
+        [AllowAnonymous]
         public async Task<IActionResult> ObtenerPorId(int id)
         {
             var result = await _restauranteService.ObtenerPorIdAsync(id);
@@ -43,9 +41,7 @@ namespace GourmetGo.Web.Controllers
         }
 
         // Crear un nuevo restaurante
-        
         [HttpPost]
-         
         public async Task<IActionResult> Crear([FromBody] CreateRestauranteDTO dto)
         {
             var result = await _restauranteService.CrearAsync(dto);

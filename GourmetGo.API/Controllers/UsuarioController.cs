@@ -8,6 +8,7 @@ namespace GourmetGo.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
@@ -18,7 +19,6 @@ namespace GourmetGo.Web.Controllers
         }
 
         // Registrar un nuevo usuario
-        
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> CrearUsuario([FromBody] CreateUsuarioDTO dto)
@@ -32,9 +32,7 @@ namespace GourmetGo.Web.Controllers
         }
 
         // Obtener usuario por ID
-        
         [HttpGet("{id}")]
-       
         public async Task<IActionResult> ObtenerUsuario(int id)
         {
             var result = await _usuarioService.ObtenerUsuario(id);
@@ -46,9 +44,7 @@ namespace GourmetGo.Web.Controllers
         }
 
         // Obtener usuario por correo
-       
         [HttpGet("correo/{correo}")]
-        
         public async Task<IActionResult> ObtenerPorCorreo(string correo)
         {
             var result = await _usuarioService.ObtenerUsuarioPorCorreo(correo);

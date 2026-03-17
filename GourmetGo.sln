@@ -14,9 +14,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{F1F5FC00-0C60-4AEA-AA95-F86BD761DC36}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IOC", "IOC", "{DD0B11F8-60F4-404D-A9ED-50B65BEAA610}"
-	ProjectSection(SolutionItems) = preProject
-		DependencyInjection.cs = DependencyInjection.cs
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GourmetGo.IOC", "GourmetGo.IOC\GourmetGo.IOC.csproj", "{9654C317-543F-4254-8EFA-A2152DAB9BE7}"
 EndProject

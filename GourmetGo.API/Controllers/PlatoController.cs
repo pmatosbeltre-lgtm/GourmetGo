@@ -8,6 +8,7 @@ namespace GourmetGo.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PlatoController : ControllerBase
     {
         private readonly IPlatoService _platoService;
@@ -24,6 +25,9 @@ namespace GourmetGo.Web.Controllers
         public async Task<IActionResult> ObtenerPorMenu(int menuId)
         {
             var result = await _platoService.ObtenerPorMenuAsync(menuId);
+
+            if (!result.Success)
+                return BadRequest(result);
 
             return Ok(result);
         }

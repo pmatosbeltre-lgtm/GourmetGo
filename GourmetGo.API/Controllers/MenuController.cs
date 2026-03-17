@@ -8,6 +8,7 @@ namespace GourmetGo.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class MenuController : ControllerBase
     {
         private readonly IMenuService _menuService;
@@ -18,7 +19,6 @@ namespace GourmetGo.Web.Controllers
         }
 
         // Obtener menús por restaurante
-      
         [HttpGet("restaurante/{restauranteId}")]
         [AllowAnonymous]
         public async Task<IActionResult> ObtenerPorRestaurante(int restauranteId)
@@ -29,9 +29,7 @@ namespace GourmetGo.Web.Controllers
         }
 
         // Crear un nuevo menú
-        
         [HttpPost]
-       
         public async Task<IActionResult> Crear([FromBody] CreateMenuDTO dto)
         {
             var result = await _menuService.CrearAsync(dto);

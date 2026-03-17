@@ -7,6 +7,7 @@ namespace GourmetGo.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class AuditoriaController : ControllerBase
     {
         private readonly IAuditoriaService _auditoriaService;

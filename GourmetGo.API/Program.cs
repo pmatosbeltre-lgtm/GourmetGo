@@ -1,47 +1,80 @@
-using GourmetGo.Application.Interfaces;
-using GourmetGo.Application.Interfaces.Auditoria;
-using GourmetGo.Application.Interfaces.Catalogo;
-using GourmetGo.Application.Interfaces.Operaciones;
-using GourmetGo.Application.Services;
-using GourmetGo.Application.Services.Auditoria;
-using GourmetGo.Application.Services.Catalogo;
-using GourmetGo.Application.Services.Operaciones;
-using GourmetGo.Domain.Entidades;
-using GourmetGo.Domain.Interfaces;
+using GourmetGo.IOC;
 using GourmetGo.Persistence.Context;
-using GourmetGo.Persistence.Repositories.Catalogo;
-using GourmetGo.Persistence.Repositories.Operaciones;
-using GourmetGo.Persistence.Repositories.Seguridad;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// --- SERVICIOS BÁSICOS ---
 builder.Services.AddControllers();
- //.AddJsonOptions(options =>
- // {
- //     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
- // });
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
-//Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-//DB
+// --- SWAGGER CON JWT ---
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        Description = "Introduce el token JWT aquí"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
+});
+
+// --- BASE DE DATOS ---
 builder.Services.AddDbContext<GourmetGoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//services 
-builder.Services.AddScoped<IRestauranteService, RestauranteService>();
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-builder.Services.AddScoped<IMenuService, MenuService>();
-builder.Services.AddScoped<IPlatoService, PlatoService>();
-builder.Services.AddScoped<IReservaService, ReservaService>();
-builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
+// --- INYECCIÓN DE DEPENDENCIAS (TODO junto aquí) ---
+builder.Services.AddInfrastructure();
 
+// --- JWT ---
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var key = jwtSection.GetValue<string>("Key");
+if (string.IsNullOrWhiteSpace(key))
+    throw new InvalidOperationException("Jwt:Key no está configurado en appsettings.json");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSection.GetValue<string>("Issuer"),
+        ValidAudience = jwtSection.GetValue<string>("Audience"),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+    };
+});
+
+// --- CORS ---
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -53,24 +86,13 @@ builder.Services.AddCors(options =>
         });
 });
 
-// Repositorios
-builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
-builder.Services.AddScoped<IRestauranteRepositorio, RestauranteRepositorio>();
-builder.Services.AddScoped<IMenuRepositorio, MenuRepositorio>();
-builder.Services.AddScoped<IPlatoRepositorio, PlatoRepositorio>();
-builder.Services.AddScoped<IReservaRepositorio, ReservaRepositorio>();
-builder.Services.AddScoped<IAuditoriaRepositorio, AuditoriaRepositorio>();
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
