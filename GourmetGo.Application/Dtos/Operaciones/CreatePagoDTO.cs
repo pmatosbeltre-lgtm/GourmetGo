@@ -8,5 +8,5 @@ public class CreatePagoDTO
 
     public decimal Monto { get; set; }
 
-    public string MetodoPago { get; set; }
+    public string MetodoPago { get; set; } = string.Empty;
 }

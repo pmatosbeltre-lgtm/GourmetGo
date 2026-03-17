@@ -21,7 +21,7 @@ public class DetalleOrdenRepositorio : IDetalleOrdenRepositorio
 
         try
         {
-            await _context.DetallesOrden.AddAsync(detalleOrden);
+            await _context.DetalleOrden.AddAsync(detalleOrden);
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateException ex)

@@ -7,4 +7,5 @@ public interface IResenaService
     Task<ResenaDTO> CrearResenaAsync(CreateResenaDTO dto);
 
     Task<IEnumerable<ResenaDTO>> ObtenerResenasPorRestauranteAsync(int restauranteId);
+
 }

@@ -2,6 +2,7 @@
 
 public class CreateDetalleOrdenDTO
 {
+    public int OrdenId { get; set; }
     public int PlatoId { get; set; }
 
     public int Cantidad { get; set; }
