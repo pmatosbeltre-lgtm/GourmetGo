@@ -1,11 +1,14 @@
 ﻿using GourmetGo.Domain.Base;
 using GourmetGo.Domain.Enums;
 using GourmetGo.Domain.Excepciones;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GourmetGo.Domain.Entidades;
 
 public class Usuario : BaseEntity
 {
+    
     public string Nombre { get; private set; }
     public string Correo { get; private set; }
     public string Contrasena { get; private set; }

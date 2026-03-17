@@ -16,7 +16,7 @@ public class MenuRepositorio : IMenuRepositorio
 
     public async Task<IEnumerable<Menu>> ObtenerPorRestauranteAsync(int restauranteId)
     {
-        return await _context.Menus
+        return await _context.Menu
             .Where(m => m.RestauranteId == restauranteId)
             .Include(m => m.Platos)
             .AsNoTracking()
@@ -25,13 +25,13 @@ public class MenuRepositorio : IMenuRepositorio
 
     public async Task AgregarAsync(Menu menu)
     {
-        await _context.Menus.AddAsync(menu);
+        await _context.Menu.AddAsync(menu);
         await _context.SaveChangesAsync();
     }
 
     public async Task ActualizarAsync(Menu menu)
     {
-        _context.Menus.Update(menu);
+        _context.Menu.Update(menu);
         await _context.SaveChangesAsync();
     }
 }

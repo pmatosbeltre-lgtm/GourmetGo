@@ -11,18 +11,38 @@ public class GourmetGoContext : DbContext
     {
     }
 
-
-    public DbSet<Usuario> Usuarios => Set<Usuario>();
+    public DbSet<Usuario> Usuario => Set<Usuario>();
     public DbSet<Reserva> Reservas => Set<Reserva>();
     public DbSet<Orden> Ordenes => Set<Orden>();
     public DbSet<Pago> Pagos => Set<Pago>();
     public DbSet<DetalleOrden> DetallesOrden => Set<DetalleOrden>();
-    public DbSet<Menu> Menus => Set<Menu>();
-    public DbSet<Plato> Platos => Set<Plato>();
-    public DbSet<Restaurante> Restaurantes => Set<Restaurante>();
+    public DbSet<Menu> Menu => Set<Menu>();
+    public DbSet<Plato> Plato => Set<Plato>();
+    public DbSet<Restaurante> Restaurante => Set<Restaurante>();
     public DbSet<Notificacion> Notificaciones => Set<Notificacion>();
     public DbSet<Reseña> Resenas => Set<Reseña>();
-    public DbSet<AuditoriaEntity> Auditorias => Set<AuditoriaEntity>();
+    public DbSet<AuditoriaEntity> Auditoria => Set<AuditoriaEntity>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Usuario>().ToTable("Usuario");
+        modelBuilder.Entity<Restaurante>().ToTable("Restaurante");
+        modelBuilder.Entity<Menu>().ToTable("Menu");
+        modelBuilder.Entity<Plato>().ToTable("Plato");
+        modelBuilder.Entity<Reserva>().ToTable("Reserva");
+        modelBuilder.Entity<Orden>().ToTable("Orden");
+        modelBuilder.Entity<Pago>().ToTable("Pago");
+        modelBuilder.Entity<DetalleOrden>().ToTable("DetalleOrden");
+        modelBuilder.Entity<Notificacion>().ToTable("Notificacion");
+        modelBuilder.Entity<Reseña>().ToTable("Resena"); 
+        modelBuilder.Entity<AuditoriaEntity>().ToTable("AuditoriaEntity");
+    }
 }
+
+
+
+
+
+
 
    
