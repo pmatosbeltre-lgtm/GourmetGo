@@ -1,5 +1,6 @@
 ﻿using GourmetGo.Application.DTOs.Operaciones;
 using GourmetGo.Application.Interfaces.Operaciones;
+using GourmetGo.Application.Base; 
 using GourmetGo.Domain.Entidades;
 using GourmetGo.Domain.Interfaces;
 
@@ -15,19 +16,20 @@ public class ReservaService : IReservaService
             ?? throw new ArgumentNullException(nameof(reservaRepositorio));
     }
 
-    public async Task<ReservaDTO> CrearReservaAsync(CreateReservaDTO dto)
+    public async Task<Result<ReservaDTO>> CrearReservaAsync(CreateReservaDTO dto)
     {
+        
         if (dto == null)
-            throw new ArgumentNullException(nameof(dto));
+            return Result<ReservaDTO>.Fail("La información de la reserva no puede estar vacía.");
 
         if (dto.UsuarioId <= 0)
-            throw new ArgumentException("Usuario inválido.");
+            return Result<ReservaDTO>.Fail("Usuario inválido.");
 
         if (dto.RestauranteId <= 0)
-            throw new ArgumentException("Restaurante inválido.");
+            return Result<ReservaDTO>.Fail("Restaurante inválido.");
 
         if (dto.CantidadPersonas <= 0)
-            throw new ArgumentException("Cantidad de personas inválida.");
+            return Result<ReservaDTO>.Fail("Cantidad de personas inválida.");
 
         var reserva = new Reserva(
             dto.Fecha,
@@ -39,30 +41,32 @@ public class ReservaService : IReservaService
 
         await _reservaRepositorio.AgregarAsync(reserva);
 
-        return MapToDTO(reserva);
+        
+        return Result<ReservaDTO>.Ok(MapToDTO(reserva), "Reserva creada exitosamente.");
     }
 
-    public async Task<ReservaDTO?> ObtenerReservaPorIdAsync(int id)
+    public async Task<Result<ReservaDTO>> ObtenerReservaPorIdAsync(int id)
     {
         if (id <= 0)
-            throw new ArgumentException("El id debe ser válido.");
+            return Result<ReservaDTO>.Fail("El id debe ser válido.");
 
         var reserva = await _reservaRepositorio.ObtenerPorIdAsync(id);
 
         if (reserva == null)
-            return null;
+            return Result<ReservaDTO>.Fail("No se encontró la reserva solicitada."); 
 
-        return MapToDTO(reserva);
+        return Result<ReservaDTO>.Ok(MapToDTO(reserva));
     }
 
-    public async Task<IEnumerable<ReservaDTO>> ObtenerReservasPorRestauranteAsync(int restauranteId)
+    public async Task<Result<IEnumerable<ReservaDTO>>> ObtenerReservasPorRestauranteAsync(int restauranteId)
     {
         if (restauranteId <= 0)
-            throw new ArgumentException("El id del restaurante es inválido.");
+            return Result<IEnumerable<ReservaDTO>>.Fail("El id del restaurante es inválido.");
 
         var reservas = await _reservaRepositorio.ObtenerPorRestauranteAsync(restauranteId);
 
-        return reservas.Select(MapToDTO);
+        
+        return Result<IEnumerable<ReservaDTO>>.Ok(reservas.Select(MapToDTO));
     }
 
     private static ReservaDTO MapToDTO(Reserva reserva)
