@@ -1,14 +1,13 @@
-using GourmetGo.IOC;
+ï»¿using GourmetGo.Domain.Interfaces;
 using GourmetGo.Persistence.Context;
+using GourmetGo.Persistence.Repositories.Seguridad;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- SERVICIOS BÁSICOS ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -21,7 +20,7 @@ builder.Services.AddSwaggerGen(c =>
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        Description = "Introduce el token JWT aquí"
+        Description = "Introduce el token JWT aquï¿½"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -40,18 +39,18 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// --- BASE DE DATOS ---
+// DbContext
 builder.Services.AddDbContext<GourmetGoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// --- INYECCIÓN DE DEPENDENCIAS (TODO junto aquí) ---
-builder.Services.AddInfrastructure();
 
-// --- JWT ---
+builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+
+// JWT
 var jwtSection = builder.Configuration.GetSection("Jwt");
 var key = jwtSection.GetValue<string>("Key");
 if (string.IsNullOrWhiteSpace(key))
-    throw new InvalidOperationException("Jwt:Key no está configurado en appsettings.json");
+    throw new InvalidOperationException("Jwt:Key no estÃ¡ configurado en appsettings.json");
 
 builder.Services.AddAuthentication(options =>
 {
@@ -74,16 +73,12 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// --- CORS ---
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+    options.AddPolicy("DevCors", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod());
 });
 
 var app = builder.Build();
@@ -91,7 +86,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors("AllowAll");
+app.UseCors("DevCors");
 
 app.UseAuthentication();
 app.UseAuthorization();

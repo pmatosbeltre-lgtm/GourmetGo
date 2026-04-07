@@ -6,9 +6,9 @@ namespace GourmetGo.Application.DTOs.Seguridad
     {
         public int Id { get; set; }
 
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = string.Empty;
 
-        public string Correo { get; set; }
+        public string Correo { get; set; } = string.Empty;
 
         public RolUsuario Rol { get; set; }
 

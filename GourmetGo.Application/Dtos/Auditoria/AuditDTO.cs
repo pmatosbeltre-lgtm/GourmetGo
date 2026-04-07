@@ -2,7 +2,7 @@
 
 public class AuditoriaDTO
 {
-    public string Accion { get; set; }
+    public string Accion { get; set; } = string.Empty;
 
     public int UsuarioId { get; set; }
 }

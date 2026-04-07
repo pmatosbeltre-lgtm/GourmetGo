@@ -8,5 +8,5 @@ public class CreateResenaDTO
 
     public int Calificacion { get; set; }
 
-    public string Comentario { get; set; }
+    public string Comentario { get; set; } = string.Empty;
 }

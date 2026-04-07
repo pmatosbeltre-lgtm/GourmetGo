@@ -12,7 +12,7 @@ public class OrdenDTO
 
     public EstadoOrden Estado { get; set; }
 
-    public string TipoOrden { get; set; }
+    public string TipoOrden { get; set; } = string.Empty;
 
     public int UsuarioId { get; set; }
 

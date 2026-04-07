@@ -3,12 +3,12 @@ namespace GourmetGo.Application.Dtos.Seguridad
 {
     public class CreateUsuarioDTO
     {
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = string.Empty;
 
-        public string Correo { get; set; }
+        public string Correo { get; set; } = string.Empty;
 
-        public string Contrasena { get; set; }
+        public string Contrasena { get; set; } = string.Empty;
 
-        public RolUsuario Rol { get; set; }
+        public RolUsuario Rol { get; set; } 
     }
 }
