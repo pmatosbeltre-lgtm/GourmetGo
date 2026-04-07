@@ -16,7 +16,7 @@ public class PlatoRepositorio : IPlatoRepositorio
 
     public async Task<IEnumerable<Plato>> ObtenerPorMenuAsync(int menuId)
     {
-        return await _context.Platos
+        return await _context.Plato
             .Where(p => p.MenuId == menuId)
             .AsNoTracking()
             .ToListAsync();
@@ -24,13 +24,13 @@ public class PlatoRepositorio : IPlatoRepositorio
 
     public async Task AgregarAsync(Plato plato)
     {
-        await _context.Platos.AddAsync(plato);
+        await _context.Plato.AddAsync(plato);
         await _context.SaveChangesAsync();
     }
 
     public async Task ActualizarAsync(Plato plato)
     {
-        _context.Platos.Update(plato);
+        _context.Plato.Update(plato);
         await _context.SaveChangesAsync();
     }
 }

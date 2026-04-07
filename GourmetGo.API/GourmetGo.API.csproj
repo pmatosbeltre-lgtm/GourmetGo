@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GourmetGo.Application\GourmetGo.Application.csproj" />
     <ProjectReference Include="..\GourmetGo.IOC\GourmetGo.IOC.csproj" />
   </ItemGroup>
 

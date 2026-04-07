@@ -8,7 +8,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- SERVICIOS BÁSICOS ---
+// --- SERVICIOS B�SICOS ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen(c =>
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        Description = "Introduce el token JWT aquí"
+        Description = "Introduce el token JWT aqu�"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -43,48 +43,6 @@ builder.Services.AddSwaggerGen(c =>
 // --- BASE DE DATOS ---
 builder.Services.AddDbContext<GourmetGoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// --- INYECCIÓN DE DEPENDENCIAS ---
-builder.Services.AddInfrastructure();
-
-// --- JWT ---
-var jwtSection = builder.Configuration.GetSection("Jwt");
-var key = jwtSection.GetValue<string>("Key");
-if (string.IsNullOrWhiteSpace(key))
-    throw new InvalidOperationException("Jwt:Key no está configurado en appsettings.json");
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSection.GetValue<string>("Issuer"),
-        ValidAudience = jwtSection.GetValue<string>("Audience"),
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
-    };
-});
-
-// --- CORS ---
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
-});
 
 var app = builder.Build();
 

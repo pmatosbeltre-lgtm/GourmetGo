@@ -1,12 +1,13 @@
 ﻿using GourmetGo.Application.DTOs.Operaciones;
+using GourmetGo.Application.Base; 
 
 namespace GourmetGo.Application.Interfaces.Operaciones;
 
 public interface IReservaService
 {
-    Task<ReservaDTO> CrearReservaAsync(CreateReservaDTO dto);
+        Task<Result<ReservaDTO>> CrearReservaAsync(CreateReservaDTO dto);
 
-    Task<ReservaDTO?> ObtenerReservaPorIdAsync(int id);
+    Task<Result<ReservaDTO>> ObtenerReservaPorIdAsync(int id);
 
-    Task<IEnumerable<ReservaDTO>> ObtenerReservasPorRestauranteAsync(int restauranteId);
+    Task<Result<IEnumerable<ReservaDTO>>> ObtenerReservasPorRestauranteAsync(int restauranteId);
 }

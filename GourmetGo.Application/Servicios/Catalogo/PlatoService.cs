@@ -18,6 +18,10 @@ public class PlatoService : BaseService, IPlatoService
 
     public async Task<Result<List<PlatoDTO>>> ObtenerPorMenuAsync(int menuId)
     {
+        // Validación de seguridad
+        if (menuId <= 0)
+            return Result<List<PlatoDTO>>.Fail("El ID del menú no es válido.");
+
         var platos = await _repositorio.ObtenerPorMenuAsync(menuId);
 
         var data = platos.Select(p => new PlatoDTO
@@ -34,6 +38,20 @@ public class PlatoService : BaseService, IPlatoService
 
     public async Task<Result<string>> CrearAsync(CreatePlatoDTO dto)
     {
+        // Validaciones 
+        if (dto == null)
+            return Result<string>.Fail("La información del plato no puede estar vacía.");
+
+        if (string.IsNullOrWhiteSpace(dto.Nombre))
+            return Result<string>.Fail("El nombre del plato es obligatorio.");
+
+        if (dto.Precio <= 0)
+            return Result<string>.Fail("El precio del plato debe ser mayor a cero.");
+
+        if (dto.MenuId <= 0)
+            return Result<string>.Fail("El plato debe estar asociado a un menú válido.");
+
+        // Creación y persistencia
         var plato = new Plato(dto.Nombre, dto.Precio, dto.MenuId);
 
         await _repositorio.AgregarAsync(plato);
