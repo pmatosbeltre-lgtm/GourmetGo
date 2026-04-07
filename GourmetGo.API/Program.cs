@@ -8,6 +8,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // --- SERVICIOS BÁSICOS ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -87,7 +88,9 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-//app.UseMiddleware<GourmetGo.API.Middlewares.ExceptionMiddleware>();
+
+app.UseMiddleware<GourmetGo.API.Middlewares.ExceptionMiddleware>();
+
 
 app.UseSwagger();
 app.UseSwaggerUI();
