@@ -1,7 +1,10 @@
 ﻿using GourmetGo.Application.DTOs.Social;
-using GourmetGo.Application.Interfaces.Social;
-using Microsoft.AspNetCore.Authorization;
+using GourmetGo.Domain.Entidades;
+using GourmetGo.Persistence.Context;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GourmetGo.API.Controllers;
 
@@ -10,30 +13,27 @@ namespace GourmetGo.API.Controllers;
 [Authorize]
 public class NotificacionController : ControllerBase
 {
-    private readonly INotificacionService _notificacionService;
+    private readonly GourmetGoContext _context;
 
-    public NotificacionController(INotificacionService notificacionService)
+    public NotificacionController(GourmetGoContext context)
     {
-        _notificacionService = notificacionService;
+        _context = context;
     }
 
-    [HttpGet("usuario/{usuarioId}")]
-    public async Task<IActionResult> GetPorUsuario(int usuarioId)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Notificacion>>> GetNotificacion()
     {
-        if (usuarioId <= 0)
-            return BadRequest("Usuario inválido");
-
-        var notificaciones = await _notificacionService.ObtenerNotificacionesPorUsuarioAsync(usuarioId);
-        return Ok(notificaciones);
+        return await _context.Notificaciones.ToListAsync();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] CreateNotificacionDTO dto)
+    public async Task<ActionResult> Post([FromBody] CreateNotificacionDTO dto)
     {
-        if (dto == null || string.IsNullOrWhiteSpace(dto.Mensaje))
-            return BadRequest("Datos inválidos");
+        var notificaciones = new Notificacion(dto.Mensaje, dto.Tipo, dto.UsuarioId);
 
-        var notificacion = await _notificacionService.CrearNotificacionAsync(dto);
-        return Ok(notificacion);
+        _context.Notificaciones.Add(notificaciones);
+        await _context.SaveChangesAsync();
+
+        return Ok(notificaciones);
     }
 }

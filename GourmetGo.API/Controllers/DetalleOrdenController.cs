@@ -1,8 +1,9 @@
 ﻿using GourmetGo.Application.DTOs.Operaciones;
-using GourmetGo.Application.Interfaces.Operaciones;
-using GourmetGo.Domain.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+using GourmetGo.Domain.Entidades;
+using GourmetGo.Persistence.Context;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace GourmetGo.API.Controllers;
 
@@ -11,27 +12,35 @@ namespace GourmetGo.API.Controllers;
 [Authorize]
 public class DetalleOrdenController : ControllerBase
 {
-    private readonly IDetalleOrdenRepositorio _detalleOrdenRepositorio;
+    private readonly GourmetGoContext _context;
 
-    public DetalleOrdenController(IDetalleOrdenRepositorio detalleOrdenRepositorio)
+    public DetalleOrdenController(GourmetGoContext context)
     {
-        _detalleOrdenRepositorio = detalleOrdenRepositorio;
+        _context = context;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<DetalleOrden>>> Get() =>
+        await _context.DetalleOrden.ToListAsync();
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<DetalleOrden>> Get(int id)
+    {
+        var item = await _context.DetalleOrden.FindAsync(id);
+        return item == null ? NotFound() : item;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] CreateDetalleOrdenDTO dto)
+    public async Task<ActionResult> Post([FromBody] CreateDetalleOrdenDTO dto)
     {
-        if (dto == null || dto.OrdenId <= 0 || dto.PlatoId <= 0)
-            return BadRequest("Datos inválidos");
+        var obj = new DetalleOrden(dto.OrdenId, dto.PlatoId, dto.Cantidad, dto.PrecioUnitario);
 
-        var detalleOrden = new GourmetGo.Domain.Entidades.DetalleOrden(
-            dto.OrdenId,
-            dto.PlatoId,
-            dto.Cantidad,
-            dto.PrecioUnitario
-        );
+        _context.DetalleOrden.Add(obj);
+        await _context.SaveChangesAsync();
 
-        await _detalleOrdenRepositorio.AgregarAsync(detalleOrden);
-        return Ok(detalleOrden);
+        return Ok(obj);
     }
+
+   
+
 }

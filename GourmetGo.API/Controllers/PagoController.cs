@@ -1,7 +1,9 @@
 ﻿using GourmetGo.Application.DTOs.Operaciones;
-using GourmetGo.Domain.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+using GourmetGo.Domain.Entidades;
+using GourmetGo.Persistence.Context;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace GourmetGo.API.Controllers;
 
@@ -10,28 +12,27 @@ namespace GourmetGo.API.Controllers;
 [Authorize]
 public class PagoController : ControllerBase
 {
-    private readonly IPagoRepositorio _pagoRepositorio;
-    private readonly IOrdenRepositorio _ordenRepositorio;
+    private readonly GourmetGoContext _context;
 
-    public PagoController(IPagoRepositorio pagoRepositorio, IOrdenRepositorio ordenRepositorio)
+    public PagoController(GourmetGoContext context)
     {
-        _pagoRepositorio = pagoRepositorio;
-        _ordenRepositorio = ordenRepositorio;
+        _context = context;
     }
 
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Pago>>> Get() =>
+        await _context.Pago.ToListAsync();
+
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] CreatePagoDTO dto)
+    public async Task<ActionResult> Post([FromBody] CreatePagoDTO dto)
     {
-        if (dto == null || dto.OrdenId <= 0)
-            return BadRequest("Datos inválidos");
+        var ordenExiste = await _context.Ordenes.AnyAsync(o => o.Id == dto.OrdenId);
+        if (!ordenExiste) return BadRequest("OrdenId no existe.");
 
-        var ordenExiste = await _ordenRepositorio.ObtenerPorIdAsync(dto.OrdenId);
-        if (ordenExiste == null)
-            return BadRequest("OrdenId no existe");
+        var pago = new Pago(dto.Monto, dto.MetodoPago, dto.OrdenId);
 
-        var pago = new GourmetGo.Domain.Entidades.Pago(dto.Monto, dto.MetodoPago, dto.OrdenId);
-
-        await _pagoRepositorio.AgregarAsync(pago);
+        _context.Pago.Add(pago); 
+        await _context.SaveChangesAsync();
 
         return Ok(new
         {
@@ -40,5 +41,6 @@ public class PagoController : ControllerBase
             monto = pago.Monto,
             ordenId = pago.OrdenId
         });
+    
     }
 }
