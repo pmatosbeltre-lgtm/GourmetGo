@@ -11,4 +11,6 @@ public interface IRestauranteRepositorio
     Task AgregarAsync(Restaurante restaurante);
 
     Task ActualizarAsync(Restaurante restaurante);
+
+    Task<Restaurante?> ObtenerPorUsuarioIdAsync(int usuarioId);
 }

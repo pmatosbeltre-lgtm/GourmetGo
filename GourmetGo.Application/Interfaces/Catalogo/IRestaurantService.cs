@@ -10,5 +10,7 @@ public interface IRestauranteService
 
     Task<Result<RestauranteDTO>> ObtenerPorIdAsync(int id);
 
+    Task<Result<RestauranteDTO>> ObtenerPorUsuarioIdAsync(int usuarioId);
+
     Task<Result<string>> CrearAsync(CreateRestauranteDTO dto);
 }

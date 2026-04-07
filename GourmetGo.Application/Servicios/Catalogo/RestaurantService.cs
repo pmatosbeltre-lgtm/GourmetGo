@@ -52,6 +52,26 @@ public class RestauranteService : BaseService, IRestauranteService
         return Result<RestauranteDTO>.Ok(dto);
     }
 
+    public async Task<Result<RestauranteDTO>> ObtenerPorUsuarioIdAsync(int usuarioId)
+    {
+        if (usuarioId <= 0)
+            return Result<RestauranteDTO>.Fail("UsuarioId inválido.");
+
+        var restaurante = await _repositorio.ObtenerPorUsuarioIdAsync(usuarioId);
+        if (restaurante == null)
+            return Result<RestauranteDTO>.Fail("Restaurante no encontrado para este usuario.");
+
+        var dto = new RestauranteDTO
+        {
+            Id = restaurante.Id,
+            Nombre = restaurante.Nombre,
+            Direccion = restaurante.Direccion,
+            Capacidad = restaurante.Capacidad
+        };
+
+        return Result<RestauranteDTO>.Ok(dto);
+    }
+
     public async Task<Result<string>> CrearAsync(CreateRestauranteDTO dto)
     {
         if (dto == null)

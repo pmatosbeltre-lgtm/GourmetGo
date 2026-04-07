@@ -13,11 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Configuration\" />
-    <Folder Include="Helpers\" />
-    <Folder Include="Forms\" />
-    <Folder Include="ViewModels\" />
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\GourmetGo.Application\GourmetGo.Application.csproj" />
   </ItemGroup>
 
 </Project>

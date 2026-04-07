@@ -31,6 +31,13 @@ public class RestauranteRepositorio : IRestauranteRepositorio
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
+    public async Task<Restaurante?> ObtenerPorUsuarioIdAsync(int usuarioId)
+    {
+        return await _context.Restaurante
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.UsuarioId == usuarioId);
+    }
+
     public async Task AgregarAsync(Restaurante restaurante)
     {
         await _context.Restaurante.AddAsync(restaurante);

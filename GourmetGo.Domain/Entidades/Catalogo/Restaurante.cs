@@ -11,6 +11,14 @@ public class Restaurante : BaseEntity
     public int Capacidad { get; private set; }
     public EstadoRestaurante Estado { get; private set; }
 
+    public int? UsuarioId { get; private set; }
+
+    public void AsignarUsuario(int usuarioId)
+    {
+        if (usuarioId <= 0) throw new ExcepcionDominio("UsuarioId inválido.");
+        UsuarioId = usuarioId;
+    }
+
     //Relaciones
 
     public ICollection<Menu> Menus { get; private set; }

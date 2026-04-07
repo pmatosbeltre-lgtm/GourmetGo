@@ -6,4 +6,5 @@ public class RestauranteDTO
     public string Nombre { get; set; } = string.Empty;
     public string Direccion { get; set; } = string.Empty;
     public int Capacidad { get; set; }
+    public int? UsuarioId { get; set; }
 }
