@@ -1,4 +1,5 @@
-﻿using GourmetGo.Application.DTOs.Social;
+﻿using GourmetGo.Application.Base;
+using GourmetGo.Application.DTOs.Social;
 using GourmetGo.Application.Interfaces.Social;
 using GourmetGo.Domain.Entidades;
 using GourmetGo.Domain.Interfaces;
@@ -11,43 +12,40 @@ public class NotificacionService : INotificacionService
 
     public NotificacionService(INotificacionRepositorio notificacionRepositorio)
     {
-        _notificacionRepositorio = notificacionRepositorio
-            ?? throw new ArgumentNullException(nameof(notificacionRepositorio));
+        _notificacionRepositorio = notificacionRepositorio;
     }
 
-    public async Task<NotificacionDTO> CrearNotificacionAsync(CreateNotificacionDTO dto)
+    public async Task<Result<NotificacionDTO>> CrearNotificacionAsync(CreateNotificacionDTO dto)
     {
-        if (dto == null)
-            throw new ArgumentNullException(nameof(dto));
-
-        if (string.IsNullOrWhiteSpace(dto.Tipo))
-            throw new ArgumentException("Tipo de notificación inválido.");
-
-        if (string.IsNullOrWhiteSpace(dto.Mensaje))
-            throw new ArgumentException("Mensaje inválido.");
+        if (dto is null)
+            return Result<NotificacionDTO>.Fail("La notificación no puede estar vacía.");
 
         if (dto.UsuarioId <= 0)
-            throw new ArgumentException("Usuario inválido.");
+            return Result<NotificacionDTO>.Fail("UsuarioId inválido.");
 
-        var notificacion = new Notificacion(
-            dto.Tipo,
-            dto.Mensaje,
-            dto.UsuarioId
-        );
+        if (string.IsNullOrWhiteSpace(dto.Tipo))
+            return Result<NotificacionDTO>.Fail("Tipo inválido.");
+
+        if (string.IsNullOrWhiteSpace(dto.Mensaje))
+            return Result<NotificacionDTO>.Fail("Mensaje inválido.");
+
+        var notificacion = new Notificacion(dto.Tipo, dto.Mensaje, dto.UsuarioId);
 
         await _notificacionRepositorio.AgregarAsync(notificacion);
 
-        return MapToDTO(notificacion);
+        return Result<NotificacionDTO>.Ok(MapToDTO(notificacion), "Notificación creada correctamente.");
     }
 
-    public async Task<IEnumerable<NotificacionDTO>> ObtenerNotificacionesPorUsuarioAsync(int usuarioId)
+    public async Task<Result<List<NotificacionDTO>>> ObtenerNotificacionesPorUsuarioAsync(int usuarioId)
     {
         if (usuarioId <= 0)
-            throw new ArgumentException("Usuario inválido.");
+            return Result<List<NotificacionDTO>>.Fail("UsuarioId inválido.");
 
         var notificaciones = await _notificacionRepositorio.ObtenerPorUsuarioAsync(usuarioId);
 
-        return notificaciones.Select(MapToDTO);
+        var data = notificaciones.Select(MapToDTO).ToList();
+
+        return Result<List<NotificacionDTO>>.Ok(data);
     }
 
     private static NotificacionDTO MapToDTO(Notificacion notificacion)

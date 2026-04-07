@@ -1,10 +1,7 @@
 ﻿using GourmetGo.Application.DTOs.Social;
-using GourmetGo.Domain.Entidades;
-using GourmetGo.Persistence.Context;
+using GourmetGo.Application.Interfaces.Social;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace GourmetGo.API.Controllers;
 
@@ -13,27 +10,42 @@ namespace GourmetGo.API.Controllers;
 [Authorize]
 public class NotificacionController : ControllerBase
 {
-    private readonly GourmetGoContext _context;
+    private readonly INotificacionService _notificacionService;
 
-    public NotificacionController(GourmetGoContext context)
+    public NotificacionController(INotificacionService notificacionService)
     {
-        _context = context;
+        _notificacionService = notificacionService;
     }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Notificacion>>> GetNotificacion()
+    
+    [HttpGet("usuario/{usuarioId:int}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPorUsuario(int usuarioId)
     {
-        return await _context.Notificaciones.ToListAsync();
+        if (usuarioId <= 0)
+            return BadRequest("El usuarioId debe ser mayor que cero.");
+
+        var result = await _notificacionService.ObtenerNotificacionesPorUsuarioAsync(usuarioId);
+
+        if (!result.Success)
+            return BadRequest(result);
+
+        return Ok(result);
     }
 
     [HttpPost]
-    public async Task<ActionResult> Post([FromBody] CreateNotificacionDTO dto)
+    public async Task<IActionResult> Post([FromBody] CreateNotificacionDTO dto)
     {
-        var notificaciones = new Notificacion(dto.Mensaje, dto.Tipo, dto.UsuarioId);
+        if (dto is null)
+            return BadRequest("El body no puede estar vacío.");
 
-        _context.Notificaciones.Add(notificaciones);
-        await _context.SaveChangesAsync();
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-        return Ok(notificaciones);
+        var result = await _notificacionService.CrearNotificacionAsync(dto);
+
+        if (!result.Success)
+            return BadRequest(result);
+
+        return Ok(result);
     }
 }

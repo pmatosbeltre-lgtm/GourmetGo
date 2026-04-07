@@ -1,101 +1,51 @@
 ﻿using GourmetGo.Application.DTOs.Social;
-using GourmetGo.Domain.Entidades;
-using GourmetGo.Persistence.Context;
+using GourmetGo.Application.Interfaces.Social;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace GourmetGo.API.Controllers
-{
-    [ApiController]
-    [Route("api/[controller]")]
+namespace GourmetGo.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
 [Authorize]
-    public class ResenaController : ControllerBase
+public class ResenaController : ControllerBase
+{
+    private readonly IResenaService _resenaService;
+
+    public ResenaController(IResenaService resenaService)
     {
-        private readonly GourmetGoContext _context;
+        _resenaService = resenaService;
+    }
 
-        public ResenaController(GourmetGoContext context)
-        {
-            _context = context;
-        }
+    [HttpGet("restaurante/{restauranteId:int}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPorRestaurante(int restauranteId)
+    {
+        if (restauranteId <= 0)
+            return BadRequest("El restauranteId debe ser mayor que cero.");
 
-        // GET: api/Resena
-        [HttpGet]
-        public async Task<ActionResult> Get()
-        {
-            var resenas = await _context.Resenas
-                .AsNoTracking()
-                .Select(r => new
-                {
-                    id = r.Id,
-                    usuarioId = r.UsuarioId,
-                    restauranteId = r.RestauranteId,
-                    calificacion = r.Calificacion,
-                    comentario = r.Comentario,
-                    fecha = r.Fecha
-                })
-                .ToListAsync();
+        var result = await _resenaService.ObtenerResenasPorRestauranteAsync(restauranteId);
 
-        var resenas = await _resenaService.ObtenerResenasPorRestauranteAsync(restauranteId);
-            return Ok(resenas);
-        }
+        if (!result.Success)
+            return BadRequest(result);
 
-        // GET: api/Resena/5
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult> GetById(int id)
-        {
-            var r = await _context.Resenas
-                .AsNoTracking()
-                .Where(x => x.Id == id)
-                .Select(x => new
-                {
-                    id = x.Id,
-                    usuarioId = x.UsuarioId,
-                    restauranteId = x.RestauranteId,
-                    calificacion = x.Calificacion,
-                    comentario = x.Comentario,
-                    fecha = x.Fecha
-                })
-                .FirstOrDefaultAsync();
+        return Ok(result);
+    }
 
-            return r is null ? NotFound() : Ok(r);
-        }
+    [HttpPost]
+    public async Task<IActionResult> Post([FromBody] CreateResenaDTO dto)
+    {
+        if (dto is null)
+            return BadRequest("El body no puede estar vacío.");
 
-        // POST: api/Resena
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody] CreateResenaDTO dto)
-        {
-            if (string.IsNullOrWhiteSpace(dto.Comentario))
-                return BadRequest("Comentario is required.");
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-            var entidad = new Reseña(dto.UsuarioId, dto.RestauranteId, dto.Calificacion, dto.Comentario);
+        var result = await _resenaService.CrearResenaAsync(dto);
 
-            _context.Resenas.Add(entidad);
-            await _context.SaveChangesAsync();
+        if (!result.Success)
+            return BadRequest(result);
 
-            var response = new
-            {
-                id = entidad.Id,
-                usuarioId = entidad.UsuarioId,
-                restauranteId = entidad.RestauranteId,
-                calificacion = entidad.Calificacion,
-                comentario = entidad.Comentario,
-                fecha = entidad.Fecha
-            };
-
-            return CreatedAtAction(nameof(GetById), new { id = entidad.Id }, response);
-        }
-
-        // DELETE: api/Resena/5
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var entidad = await _context.Resenas.FindAsync(id);
-            if (entidad == null) return NotFound();
-
-            _context.Resenas.Remove(entidad);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
+        return Ok(result);
     }
 }

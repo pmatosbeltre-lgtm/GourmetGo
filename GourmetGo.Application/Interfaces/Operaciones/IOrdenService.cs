@@ -1,12 +1,13 @@
-﻿using GourmetGo.Application.DTOs.Operaciones;
+﻿using GourmetGo.Application.Base;
+using GourmetGo.Application.DTOs.Operaciones;
 
 namespace GourmetGo.Application.Interfaces.Operaciones;
 
 public interface IOrdenService
 {
-    Task<OrdenDTO> CrearOrdenAsync(CreateOrdenDTO dto);
+    Task<Result<OrdenDTO>> CrearOrdenAsync(CreateOrdenDTO dto);
 
-    Task<OrdenDTO?> ObtenerOrdenPorIdAsync(int id);
+    Task<Result<OrdenDTO>> ObtenerOrdenPorIdAsync(int id);
 
-    Task<IEnumerable<OrdenDTO>> ObtenerOrdenesPorUsuarioAsync(int usuarioId);
+    Task<Result<List<OrdenDTO>>> ObtenerOrdenesPorUsuarioAsync(int usuarioId);
 }

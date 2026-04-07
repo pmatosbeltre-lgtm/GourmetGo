@@ -1,13 +1,14 @@
-﻿using GourmetGo.Domain.Interfaces;
+﻿using GourmetGo.IOC;
 using GourmetGo.Persistence.Context;
-using GourmetGo.Persistence.Repositories.Seguridad;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// --- SERVICIOS BÁSICOS ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -20,7 +21,7 @@ builder.Services.AddSwaggerGen(c =>
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        Description = "Introduce el token JWT aqu�"
+        Description = "Introduce el token JWT aquí"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -39,14 +40,14 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// DbContext
+// --- BASE DE DATOS ---
 builder.Services.AddDbContext<GourmetGoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// --- INYECCIÓN DE DEPENDENCIAS (TODO junto aquí) ---
+builder.Services.AddInfrastructure();
 
-builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
-
-// JWT
+// --- JWT ---
 var jwtSection = builder.Configuration.GetSection("Jwt");
 var key = jwtSection.GetValue<string>("Key");
 if (string.IsNullOrWhiteSpace(key))
@@ -63,8 +64,8 @@ builder.Services.AddAuthentication(options =>
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
+        ValidateIssuer = false,
+        ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSection.GetValue<string>("Issuer"),
@@ -73,24 +74,29 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// --- CORS ---
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("DevCors", policy =>
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
 });
 
 var app = builder.Build();
+//app.UseMiddleware<GourmetGo.API.Middlewares.ExceptionMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors("DevCors");
-
+app.UseCors("AllowAll");
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.Run(); 

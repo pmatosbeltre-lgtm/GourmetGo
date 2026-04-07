@@ -33,6 +33,7 @@ namespace GourmetGo.Web.Controllers
 
         // Obtener usuario por ID
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> ObtenerUsuario(int id)
         {
             var result = await _usuarioService.ObtenerUsuario(id);
@@ -45,6 +46,7 @@ namespace GourmetGo.Web.Controllers
 
         // Obtener usuario por correo
         [HttpGet("correo/{correo}")]
+        [AllowAnonymous]
         public async Task<IActionResult> ObtenerPorCorreo(string correo)
         {
             var result = await _usuarioService.ObtenerUsuarioPorCorreo(correo);

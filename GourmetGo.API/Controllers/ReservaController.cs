@@ -31,6 +31,7 @@ namespace GourmetGo.Web.Controllers
 
         // Obtener reserva por ID
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> ObtenerPorId(int id)
         {
             var result = await _reservaService.ObtenerReservaPorIdAsync(id);
@@ -43,6 +44,7 @@ namespace GourmetGo.Web.Controllers
 
         // Obtener reservas por restaurante
         [HttpGet("restaurante/{restauranteId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> ObtenerPorRestaurante(int restauranteId)
         {
             var result = await _reservaService.ObtenerReservasPorRestauranteAsync(restauranteId);

@@ -3,6 +3,7 @@ using GourmetGo.Domain.Entidades;
 using GourmetGo.Domain.Interfaces;
 using GourmetGo.Persistence.Context;
 
+
 namespace GourmetGo.Persistence.Repositories.Operaciones;
 
 public class DetalleOrdenRepositorio : IDetalleOrdenRepositorio
@@ -21,12 +22,20 @@ public class DetalleOrdenRepositorio : IDetalleOrdenRepositorio
 
         try
         {
-            await _context.DetalleOrden.AddAsync(detalleOrden);
+            await _context.DetallesOrden.AddAsync(detalleOrden);
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateException ex)
         {
             throw new Exception("Ocurrió un error al guardar el detalle de la orden.", ex);
         }
+    }
+
+    public async Task<IEnumerable<DetalleOrden>> ObtenerPorOrdenAsync(int ordenId)
+    {
+        return await _context.DetallesOrden
+            .AsNoTracking()
+            .Where(d => d.OrdenId == ordenId)
+            .ToListAsync();
     }
 }

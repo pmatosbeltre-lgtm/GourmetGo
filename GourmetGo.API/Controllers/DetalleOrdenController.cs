@@ -1,9 +1,7 @@
 ﻿using GourmetGo.Application.DTOs.Operaciones;
-using GourmetGo.Domain.Entidades;
-using GourmetGo.Persistence.Context;
+using GourmetGo.Application.Interfaces.Operaciones;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace GourmetGo.API.Controllers;
 
@@ -12,35 +10,27 @@ namespace GourmetGo.API.Controllers;
 [Authorize]
 public class DetalleOrdenController : ControllerBase
 {
-    private readonly GourmetGoContext _context;
+    private readonly IDetalleOrdenService _detalleOrdenService;
 
-    public DetalleOrdenController(GourmetGoContext context)
+    public DetalleOrdenController(IDetalleOrdenService detalleOrdenService)
     {
-        _context = context;
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<DetalleOrden>>> Get() =>
-        await _context.DetalleOrden.ToListAsync();
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<DetalleOrden>> Get(int id)
-    {
-        var item = await _context.DetalleOrden.FindAsync(id);
-        return item == null ? NotFound() : item;
+        _detalleOrdenService = detalleOrdenService;
     }
 
     [HttpPost]
-    public async Task<ActionResult> Post([FromBody] CreateDetalleOrdenDTO dto)
+    public async Task<IActionResult> Post([FromBody] CreateDetalleOrdenDTO dto)
     {
-        var obj = new DetalleOrden(dto.OrdenId, dto.PlatoId, dto.Cantidad, dto.PrecioUnitario);
+        if (dto is null)
+            return BadRequest("El body no puede estar vacío.");
 
-        _context.DetalleOrden.Add(obj);
-        await _context.SaveChangesAsync();
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-        return Ok(obj);
+        var result = await _detalleOrdenService.CrearAsync(dto);
+
+        if (!result.Success)
+            return BadRequest(result);
+
+        return Ok(result);
     }
-
-   
-
 }

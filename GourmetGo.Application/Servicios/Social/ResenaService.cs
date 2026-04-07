@@ -1,4 +1,5 @@
-﻿using GourmetGo.Application.DTOs.Social;
+﻿using GourmetGo.Application.Base;
+using GourmetGo.Application.DTOs.Social;
 using GourmetGo.Application.Interfaces.Social;
 using GourmetGo.Domain.Entidades;
 using GourmetGo.Domain.Interfaces;
@@ -11,47 +12,43 @@ public class ResenaService : IResenaService
 
     public ResenaService(IResenaRepositorio resenaRepositorio)
     {
-        _resenaRepositorio = resenaRepositorio
-            ?? throw new ArgumentNullException(nameof(resenaRepositorio));
+        _resenaRepositorio = resenaRepositorio;
     }
 
-    public async Task<ResenaDTO> CrearResenaAsync(CreateResenaDTO dto)
+    public async Task<Result<ResenaDTO>> CrearResenaAsync(CreateResenaDTO dto)
     {
-        if (dto == null)
-            throw new ArgumentNullException(nameof(dto));
+        if (dto is null)
+            return Result<ResenaDTO>.Fail("La reseña no puede estar vacía.");
 
         if (dto.UsuarioId <= 0)
-            throw new ArgumentException("Usuario inválido.");
+            return Result<ResenaDTO>.Fail("UsuarioId inválido.");
 
         if (dto.RestauranteId <= 0)
-            throw new ArgumentException("Restaurante inválido.");
+            return Result<ResenaDTO>.Fail("RestauranteId inválido.");
 
         if (dto.Calificacion < 1 || dto.Calificacion > 5)
-            throw new ArgumentException("La calificación debe estar entre 1 y 5.");
+            return Result<ResenaDTO>.Fail("La calificación debe estar entre 1 y 5.");
 
         if (string.IsNullOrWhiteSpace(dto.Comentario))
-            throw new ArgumentException("Comentario inválido.");
+            return Result<ResenaDTO>.Fail("Comentario inválido.");
 
-        var resena = new Reseña(
-            dto.UsuarioId,
-            dto.RestauranteId,
-            dto.Calificacion,
-            dto.Comentario
-        );
+        var resena = new Reseña(dto.UsuarioId, dto.RestauranteId, dto.Calificacion, dto.Comentario);
 
         await _resenaRepositorio.AgregarAsync(resena);
 
-        return MapToDTO(resena);
+        return Result<ResenaDTO>.Ok(MapToDTO(resena), "Reseña creada correctamente.");
     }
 
-    public async Task<IEnumerable<ResenaDTO>> ObtenerResenasPorRestauranteAsync(int restauranteId)
+    public async Task<Result<List<ResenaDTO>>> ObtenerResenasPorRestauranteAsync(int restauranteId)
     {
         if (restauranteId <= 0)
-            throw new ArgumentException("Restaurante inválido.");
+            return Result<List<ResenaDTO>>.Fail("RestauranteId inválido.");
 
         var resenas = await _resenaRepositorio.ObtenerPorRestauranteAsync(restauranteId);
 
-        return resenas.Select(MapToDTO);
+        var data = resenas.Select(MapToDTO).ToList();
+
+        return Result<List<ResenaDTO>>.Ok(data);
     }
 
     private static ResenaDTO MapToDTO(Reseña resena)

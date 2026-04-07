@@ -1,10 +1,11 @@
-﻿using GourmetGo.Application.DTOs.Operaciones;
+﻿using GourmetGo.Application.Base;
+using GourmetGo.Application.DTOs.Operaciones;
 
 namespace GourmetGo.Application.Interfaces.Operaciones;
 
 public interface IPagoService
 {
-    Task<PagoDTO> RegistrarPagoAsync(CreatePagoDTO dto);
+    Task<Result<PagoDTO>> RegistrarPagoAsync(CreatePagoDTO dto);
 
-    Task<PagoDTO?> ObtenerPagoPorOrdenAsync(int ordenId);
+    Task<Result<PagoDTO>> ObtenerPagoPorOrdenAsync(int ordenId);
 }

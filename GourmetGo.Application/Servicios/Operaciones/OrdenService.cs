@@ -1,4 +1,5 @@
-﻿using GourmetGo.Application.DTOs.Operaciones;
+﻿using GourmetGo.Application.Base;
+using GourmetGo.Application.DTOs.Operaciones;
 using GourmetGo.Application.Interfaces.Operaciones;
 using GourmetGo.Domain.Entidades;
 using GourmetGo.Domain.Interfaces;
@@ -11,14 +12,24 @@ public class OrdenService : IOrdenService
 
     public OrdenService(IOrdenRepositorio ordenRepositorio)
     {
-        _ordenRepositorio = ordenRepositorio
-            ?? throw new ArgumentNullException(nameof(ordenRepositorio));
+        _ordenRepositorio = ordenRepositorio;
     }
 
-    public async Task<OrdenDTO> CrearOrdenAsync(CreateOrdenDTO dto)
+    public async Task<Result<OrdenDTO>> CrearOrdenAsync(CreateOrdenDTO dto)
     {
-        if (dto == null)
-            throw new ArgumentNullException(nameof(dto));
+        // Validaciones (estructurales / de entrada)
+        if (dto is null)
+            return Result<OrdenDTO>.Fail("La orden no puede estar vacía.");
+
+        if (dto.UsuarioId <= 0)
+            return Result<OrdenDTO>.Fail("UsuarioId inválido.");
+
+        if (dto.RestauranteId <= 0)
+            return Result<OrdenDTO>.Fail("RestauranteId inválido.");
+
+        if (string.IsNullOrWhiteSpace(dto.TipoOrden))
+            return Result<OrdenDTO>.Fail("TipoOrden es obligatorio.");
+
 
         var orden = new Orden(
             dto.Fecha,
@@ -29,24 +40,32 @@ public class OrdenService : IOrdenService
 
         await _ordenRepositorio.AgregarAsync(orden);
 
-        return MapToDTO(orden);
+        return Result<OrdenDTO>.Ok(MapToDTO(orden), "Orden creada correctamente.");
     }
 
-    public async Task<OrdenDTO?> ObtenerOrdenPorIdAsync(int id)
+    public async Task<Result<OrdenDTO>> ObtenerOrdenPorIdAsync(int id)
     {
+        if (id <= 0)
+            return Result<OrdenDTO>.Fail("El ID de la orden no es válido.");
+
         var orden = await _ordenRepositorio.ObtenerPorIdAsync(id);
 
-        if (orden == null)
-            return null;
+        if (orden is null)
+            return Result<OrdenDTO>.Fail("Orden no encontrada.");
 
-        return MapToDTO(orden);
+        return Result<OrdenDTO>.Ok(MapToDTO(orden));
     }
 
-    public async Task<IEnumerable<OrdenDTO>> ObtenerOrdenesPorUsuarioAsync(int usuarioId)
+    public async Task<Result<List<OrdenDTO>>> ObtenerOrdenesPorUsuarioAsync(int usuarioId)
     {
+        if (usuarioId <= 0)
+            return Result<List<OrdenDTO>>.Fail("El ID del usuario no es válido.");
+
         var ordenes = await _ordenRepositorio.ObtenerPorUsuarioAsync(usuarioId);
 
-        return ordenes.Select(MapToDTO);
+        var data = ordenes.Select(MapToDTO).ToList();
+
+        return Result<List<OrdenDTO>>.Ok(data);
     }
 
     private static OrdenDTO MapToDTO(Orden orden)

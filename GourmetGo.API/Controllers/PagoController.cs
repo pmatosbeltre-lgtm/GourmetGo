@@ -1,9 +1,7 @@
 ﻿using GourmetGo.Application.DTOs.Operaciones;
-using GourmetGo.Domain.Entidades;
-using GourmetGo.Persistence.Context;
+using GourmetGo.Application.Interfaces.Operaciones;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace GourmetGo.API.Controllers;
 
@@ -12,35 +10,43 @@ namespace GourmetGo.API.Controllers;
 [Authorize]
 public class PagoController : ControllerBase
 {
-    private readonly GourmetGoContext _context;
+    private readonly IPagoService _pagoService;
 
-    public PagoController(GourmetGoContext context)
+    public PagoController(IPagoService pagoService)
     {
-        _context = context;
+        _pagoService = pagoService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Pago>>> Get() =>
-        await _context.Pago.ToListAsync();
+    [HttpGet("orden/{ordenId:int}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPorOrden(int ordenId)
+    {
+        if (ordenId <= 0)
+            return BadRequest("El ordenId debe ser mayor que cero.");
+
+        var result = await _pagoService.ObtenerPagoPorOrdenAsync(ordenId);
+
+        if (!result.Success)
+            return NotFound(result);
+
+        return Ok(result);
+    }
 
     [HttpPost]
-    public async Task<ActionResult> Post([FromBody] CreatePagoDTO dto)
+
+    public async Task<IActionResult> Post([FromBody] CreatePagoDTO dto)
     {
-        var ordenExiste = await _context.Ordenes.AnyAsync(o => o.Id == dto.OrdenId);
-        if (!ordenExiste) return BadRequest("OrdenId no existe.");
+        if (dto is null)
+            return BadRequest("El body no puede estar vacío.");
 
-        var pago = new Pago(dto.Monto, dto.MetodoPago, dto.OrdenId);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-        _context.Pago.Add(pago); 
-        await _context.SaveChangesAsync();
+        var result = await _pagoService.RegistrarPagoAsync(dto);
 
-        return Ok(new
-        {
-            id = pago.Id,
-            metodoPago = pago.MetodoPago,
-            monto = pago.Monto,
-            ordenId = pago.OrdenId
-        });
-    
+        if (!result.Success)
+            return BadRequest(result);
+
+        return Ok(result);
     }
 }

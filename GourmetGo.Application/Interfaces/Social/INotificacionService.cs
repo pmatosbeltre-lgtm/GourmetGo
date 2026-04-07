@@ -1,10 +1,11 @@
-﻿using GourmetGo.Application.DTOs.Social;
+﻿using GourmetGo.Application.Base;
+using GourmetGo.Application.DTOs.Social;
 
 namespace GourmetGo.Application.Interfaces.Social;
 
 public interface INotificacionService
 {
-    Task<NotificacionDTO> CrearNotificacionAsync(CreateNotificacionDTO dto);
+    Task<Result<NotificacionDTO>> CrearNotificacionAsync(CreateNotificacionDTO dto);
 
-    Task<IEnumerable<NotificacionDTO>> ObtenerNotificacionesPorUsuarioAsync(int usuarioId);
+    Task<Result<List<NotificacionDTO>>> ObtenerNotificacionesPorUsuarioAsync(int usuarioId);
 }

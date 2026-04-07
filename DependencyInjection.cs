@@ -52,6 +52,7 @@ public static class DependencyInjection
         // Servicios (aplicacion)
         services.AddScoped<IUsuarioService, UsuarioService>();
         services.AddScoped<IOrdenService, OrdenService>();
+        services.AddScoped<IDetalleOrdenService, DetalleOrdenService>();
         services.AddScoped<IReservaService, ReservaService>();
         services.AddScoped<IPagoService, PagoService>();
         services.AddScoped<INotificacionService, NotificacionService>();
