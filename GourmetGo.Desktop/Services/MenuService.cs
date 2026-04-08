@@ -9,10 +9,7 @@ public class MenuService
 {
     private readonly ApiClient _api;
 
-    public MenuService(ApiClient api)
-    {
-        _api = api;
-    }
+    public MenuService(ApiClient api) => _api = api;
 
     public Task<Result<List<MenuDTO>>> ObtenerPorRestauranteAsync(int restauranteId)
         => _api.GetAsync<Result<List<MenuDTO>>>($"/api/Menu/restaurante/{restauranteId}");

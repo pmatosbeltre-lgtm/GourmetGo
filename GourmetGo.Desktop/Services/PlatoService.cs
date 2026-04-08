@@ -4,6 +4,7 @@ using GourmetGo.Application.DTOs.Catalogo.Plato;
 using GourmetGo.Application.Base;
 
 
+
 namespace GourmetGo.Desktop.Services;
 
 public class PlatoService
