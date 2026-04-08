@@ -30,6 +30,13 @@
         {
             TapControl = new TabControl();
             tabMain = new TabPage();
+            lblOrdenesActivas = new Label();
+            lblReservasHoy = new Label();
+            lblCapacidad = new Label();
+            lblRestauranteDireccion = new Label();
+            lblRol = new Label();
+            lblUsuario = new Label();
+            lblRestauranteNombre = new Label();
             lblTitulo = new Label();
             tabMenus = new TabPage();
             tabPlatos = new TabPage();
@@ -37,13 +44,11 @@
             tabOrdenes = new TabPage();
             tabPagos = new TabPage();
             tabResenas = new TabPage();
-            lblRestauranteNombre = new Label();
-            lblUsuario = new Label();
-            lblRol = new Label();
-            lblRestauranteDireccion = new Label();
-            lblCapacidad = new Label();
+            dgvReservas = new DataGridView();
             TapControl.SuspendLayout();
             tabMain.SuspendLayout();
+            tabReservas.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvReservas).BeginInit();
             SuspendLayout();
             // 
             // TapControl
@@ -65,6 +70,8 @@
             // 
             // tabMain
             // 
+            tabMain.Controls.Add(lblOrdenesActivas);
+            tabMain.Controls.Add(lblReservasHoy);
             tabMain.Controls.Add(lblCapacidad);
             tabMain.Controls.Add(lblRestauranteDireccion);
             tabMain.Controls.Add(lblRol);
@@ -78,6 +85,79 @@
             tabMain.TabIndex = 0;
             tabMain.Text = "Home";
             tabMain.UseVisualStyleBackColor = true;
+            // 
+            // lblOrdenesActivas
+            // 
+            lblOrdenesActivas.AutoSize = true;
+            lblOrdenesActivas.Location = new Point(531, 391);
+            lblOrdenesActivas.Name = "lblOrdenesActivas";
+            lblOrdenesActivas.Size = new Size(38, 15);
+            lblOrdenesActivas.TabIndex = 7;
+            lblOrdenesActivas.Text = "label2";
+            // 
+            // lblReservasHoy
+            // 
+            lblReservasHoy.AutoSize = true;
+            lblReservasHoy.Location = new Point(459, 392);
+            lblReservasHoy.Name = "lblReservasHoy";
+            lblReservasHoy.Size = new Size(38, 15);
+            lblReservasHoy.TabIndex = 6;
+            lblReservasHoy.Text = "label1";
+            // 
+            // lblCapacidad
+            // 
+            lblCapacidad.BackColor = Color.LightGray;
+            lblCapacidad.FlatStyle = FlatStyle.Popup;
+            lblCapacidad.ForeColor = SystemColors.ActiveCaptionText;
+            lblCapacidad.Location = new Point(481, 327);
+            lblCapacidad.Name = "lblCapacidad";
+            lblCapacidad.Size = new Size(269, 40);
+            lblCapacidad.TabIndex = 5;
+            lblCapacidad.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // lblRestauranteDireccion
+            // 
+            lblRestauranteDireccion.BackColor = Color.LightGray;
+            lblRestauranteDireccion.FlatStyle = FlatStyle.Popup;
+            lblRestauranteDireccion.ForeColor = SystemColors.ActiveCaptionText;
+            lblRestauranteDireccion.Location = new Point(481, 260);
+            lblRestauranteDireccion.Name = "lblRestauranteDireccion";
+            lblRestauranteDireccion.Size = new Size(269, 40);
+            lblRestauranteDireccion.TabIndex = 4;
+            lblRestauranteDireccion.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // lblRol
+            // 
+            lblRol.BackColor = Color.LightGray;
+            lblRol.FlatStyle = FlatStyle.Popup;
+            lblRol.ForeColor = SystemColors.ActiveCaptionText;
+            lblRol.Location = new Point(167, 327);
+            lblRol.Name = "lblRol";
+            lblRol.Size = new Size(269, 40);
+            lblRol.TabIndex = 3;
+            lblRol.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // lblUsuario
+            // 
+            lblUsuario.BackColor = Color.LightGray;
+            lblUsuario.FlatStyle = FlatStyle.Popup;
+            lblUsuario.ForeColor = SystemColors.ActiveCaptionText;
+            lblUsuario.Location = new Point(167, 260);
+            lblUsuario.Name = "lblUsuario";
+            lblUsuario.Size = new Size(269, 40);
+            lblUsuario.TabIndex = 2;
+            lblUsuario.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // lblRestauranteNombre
+            // 
+            lblRestauranteNombre.BackColor = Color.LightGray;
+            lblRestauranteNombre.FlatStyle = FlatStyle.Popup;
+            lblRestauranteNombre.ForeColor = SystemColors.ActiveCaptionText;
+            lblRestauranteNombre.Location = new Point(271, 149);
+            lblRestauranteNombre.Name = "lblRestauranteNombre";
+            lblRestauranteNombre.Size = new Size(375, 40);
+            lblRestauranteNombre.TabIndex = 1;
+            lblRestauranteNombre.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // lblTitulo
             // 
@@ -112,6 +192,7 @@
             // 
             // tabReservas
             // 
+            tabReservas.Controls.Add(dgvReservas);
             tabReservas.Location = new Point(4, 24);
             tabReservas.Name = "tabReservas";
             tabReservas.Padding = new Padding(3);
@@ -147,60 +228,14 @@
             tabResenas.Text = "Resenas";
             tabResenas.UseVisualStyleBackColor = true;
             // 
-            // lblRestauranteNombre
+            // dgvReservas
             // 
-            lblRestauranteNombre.BackColor = Color.LightGray;
-            lblRestauranteNombre.FlatStyle = FlatStyle.Popup;
-            lblRestauranteNombre.ForeColor = SystemColors.ActiveCaptionText;
-            lblRestauranteNombre.Location = new Point(271, 149);
-            lblRestauranteNombre.Name = "lblRestauranteNombre";
-            lblRestauranteNombre.Size = new Size(375, 40);
-            lblRestauranteNombre.TabIndex = 1;
-            lblRestauranteNombre.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // lblUsuario
-            // 
-            lblUsuario.BackColor = Color.LightGray;
-            lblUsuario.FlatStyle = FlatStyle.Popup;
-            lblUsuario.ForeColor = SystemColors.ActiveCaptionText;
-            lblUsuario.Location = new Point(167, 260);
-            lblUsuario.Name = "lblUsuario";
-            lblUsuario.Size = new Size(269, 40);
-            lblUsuario.TabIndex = 2;
-            lblUsuario.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // lblRol
-            // 
-            lblRol.BackColor = Color.LightGray;
-            lblRol.FlatStyle = FlatStyle.Popup;
-            lblRol.ForeColor = SystemColors.ActiveCaptionText;
-            lblRol.Location = new Point(167, 327);
-            lblRol.Name = "lblRol";
-            lblRol.Size = new Size(269, 40);
-            lblRol.TabIndex = 3;
-            lblRol.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // lblRestauranteDireccion
-            // 
-            lblRestauranteDireccion.BackColor = Color.LightGray;
-            lblRestauranteDireccion.FlatStyle = FlatStyle.Popup;
-            lblRestauranteDireccion.ForeColor = SystemColors.ActiveCaptionText;
-            lblRestauranteDireccion.Location = new Point(481, 260);
-            lblRestauranteDireccion.Name = "lblRestauranteDireccion";
-            lblRestauranteDireccion.Size = new Size(269, 40);
-            lblRestauranteDireccion.TabIndex = 4;
-            lblRestauranteDireccion.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // lblCapacidad
-            // 
-            lblCapacidad.BackColor = Color.LightGray;
-            lblCapacidad.FlatStyle = FlatStyle.Popup;
-            lblCapacidad.ForeColor = SystemColors.ActiveCaptionText;
-            lblCapacidad.Location = new Point(481, 327);
-            lblCapacidad.Name = "lblCapacidad";
-            lblCapacidad.Size = new Size(269, 40);
-            lblCapacidad.TabIndex = 5;
-            lblCapacidad.TextAlign = ContentAlignment.MiddleCenter;
+            dgvReservas.AllowUserToOrderColumns = true;
+            dgvReservas.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvReservas.Location = new Point(393, 110);
+            dgvReservas.Name = "dgvReservas";
+            dgvReservas.Size = new Size(240, 150);
+            dgvReservas.TabIndex = 0;
             // 
             // Main
             // 
@@ -210,8 +245,12 @@
             Controls.Add(TapControl);
             Name = "Main";
             Text = "Main";
+            Load += Main_Load;
             TapControl.ResumeLayout(false);
             tabMain.ResumeLayout(false);
+            tabMain.PerformLayout();
+            tabReservas.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvReservas).EndInit();
             ResumeLayout(false);
         }
 
@@ -231,5 +270,8 @@
         private Label lblRestauranteNombre;
         private Label lblCapacidad;
         private Label lblRestauranteDireccion;
+        private Label lblOrdenesActivas;
+        private Label lblReservasHoy;
+        private DataGridView dgvReservas;
     }
 }

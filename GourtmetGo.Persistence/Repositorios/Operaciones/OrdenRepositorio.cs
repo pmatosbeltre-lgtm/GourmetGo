@@ -73,4 +73,11 @@ public class OrdenRepositorio : IOrdenRepositorio
             throw new Exception("Ocurrió un error al actualizar la orden.", ex);
         }
     }
+
+    public async Task<IEnumerable<Orden>> ObtenerPorRestauranteAsync(int restauranteId)
+    {
+        return await _context.Ordenes
+            .Where(o => o.RestauranteId == restauranteId)
+            .ToListAsync();
+    }
 }

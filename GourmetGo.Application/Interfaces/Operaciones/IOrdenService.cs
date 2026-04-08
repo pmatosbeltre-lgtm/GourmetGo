@@ -10,4 +10,9 @@ public interface IOrdenService
     Task<Result<OrdenDTO>> ObtenerOrdenPorIdAsync(int id);
 
     Task<Result<List<OrdenDTO>>> ObtenerOrdenesPorUsuarioAsync(int usuarioId);
+
+    Task<Result<string>> ActualizarEstadoAsync(int id, UpdateOrdenDTO dto);
+
+    Task<Result<List<OrdenDTO>>> ObtenerOrdenesPorRestauranteAsync(int restauranteId);
+
 }

@@ -1,9 +1,8 @@
-﻿public class UpdateOrdenDTO
+﻿using GourmetGo.Domain.Enums;
+
+namespace GourmetGo.Application.DTOs.Operaciones;
+
+public class UpdateOrdenDTO
 {
-  
-    public int Estado { get; set; }
-
-    public string TipoOrden { get; set; } = string.Empty;
-
-  
+    public EstadoOrden NuevoEstado { get; set; }
 }

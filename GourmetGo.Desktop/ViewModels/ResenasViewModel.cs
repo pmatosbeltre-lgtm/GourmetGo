@@ -1,4 +1,4 @@
-﻿using GourmetGo.Desktop.Helpers;
+﻿using GourmetGo.Application.Base;
 using GourmetGo.Desktop.Services;
 using GourmetGo.Application.DTOs.Social;
 

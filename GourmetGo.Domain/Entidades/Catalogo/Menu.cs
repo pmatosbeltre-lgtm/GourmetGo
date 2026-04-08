@@ -10,7 +10,16 @@ namespace GourmetGo.Domain.Entidades.Catalogo
         public int RestauranteId { get; private set; }
         public Restaurante Restaurante { get; private set; }
 
+        public void Actualizar(string nombre, bool activo)
+        {
+            // Validaciones de negocio
+            if (string.IsNullOrWhiteSpace(nombre))
+                throw new ExcepcionDominio("El nombre del menú es obligatorio.");
 
+            // Cambio de estado controlado
+            Nombre = nombre;
+            Activo = activo;
+        }
         public ICollection<Plato> Platos { get; private set; }
 
         //validaciones

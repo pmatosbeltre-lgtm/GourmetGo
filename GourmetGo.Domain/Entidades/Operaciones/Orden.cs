@@ -22,6 +22,17 @@ public class Orden : BaseEntity
     public Pago? Pago { get; private set; }
 
     public ICollection<DetalleOrden> Detalles { get; private set; }
+    public void CambiarEstado(EstadoOrden nuevoEstado)
+    {
+        if (nuevoEstado == Estado)
+            throw new OrdenInvalidaExcepcion("El nuevo estado es igual al estado actual.");
+
+        // Validaciones de transición
+        if (Estado == EstadoOrden.Entregada || Estado == EstadoOrden.Cancelada)
+            throw new OrdenInvalidaExcepcion("No se puede cambiar el estado de una orden entregada o cancelada.");
+
+        Estado = nuevoEstado;
+    }
 
     // Validaciones
     public Orden(DateTime fecha, string tipoOrden, int usuarioId, int restauranteId)

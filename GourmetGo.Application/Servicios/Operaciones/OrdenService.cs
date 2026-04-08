@@ -14,7 +14,30 @@ public class OrdenService : IOrdenService
     {
         _ordenRepositorio = ordenRepositorio;
     }
+    public async Task<Result<string>> ActualizarEstadoAsync(int id, UpdateOrdenDTO dto)
+    {
+        if (id <= 0)
+            return Result<string>.Fail("El ID de la orden no es válido.");
 
+        if (dto is null)
+            return Result<string>.Fail("El DTO no puede estar vacío.");
+
+        var orden = await _ordenRepositorio.ObtenerPorIdAsync(id);
+
+        if (orden is null)
+            return Result<string>.Fail("Orden no encontrada.");
+
+        try
+        {
+            orden.CambiarEstado(dto.NuevoEstado);
+            await _ordenRepositorio.ActualizarAsync(orden);
+            return Result<string>.Ok("Estado actualizado correctamente.");
+        }
+        catch (Exception ex)
+        {
+            return Result<string>.Fail(ex.Message);
+        }
+    }
     public async Task<Result<OrdenDTO>> CrearOrdenAsync(CreateOrdenDTO dto)
     {
         // Validaciones (estructurales / de entrada)
@@ -66,6 +89,22 @@ public class OrdenService : IOrdenService
         var data = ordenes.Select(MapToDTO).ToList();
 
         return Result<List<OrdenDTO>>.Ok(data);
+    }
+    public async Task<Result<List<OrdenDTO>>> ObtenerOrdenesPorRestauranteAsync(int restauranteId)
+    {
+        if (restauranteId <= 0)
+            return Result<List<OrdenDTO>>.Fail("El ID del restaurante no es válido.");
+
+        try
+        {
+            var ordenes = await _ordenRepositorio.ObtenerPorRestauranteAsync(restauranteId);
+            var data = ordenes.Select(MapToDTO).ToList();
+            return Result<List<OrdenDTO>>.Ok(data);
+        }
+        catch (Exception ex)
+        {
+            return Result<List<OrdenDTO>>.Fail($"Error obteniendo órdenes: {ex.Message}");
+        }
     }
 
     private static OrdenDTO MapToDTO(Orden orden)

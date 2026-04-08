@@ -1,5 +1,7 @@
 ﻿using GourmetGo.Desktop.Helpers;
 using GourmetGo.Application.DTOs.Operaciones;
+using GourmetGo.Application.Base;
+
 
 namespace GourmetGo.Desktop.Services;
 
@@ -17,4 +19,12 @@ public class OrdenService
 
     public Task<Result<OrdenDTO>> CrearAsync(CreateOrdenDTO dto)
         => _api.PostAsync<CreateOrdenDTO, Result<OrdenDTO>>("/api/Orden", dto);
+
+    public Task<Result<List<OrdenDTO>>> ObtenerOrdenesPorRestauranteAsync(int restauranteId)
+          => _api.GetAsync<Result<List<OrdenDTO>>>($"/api/Orden/restaurante/{restauranteId}");
+
+    public async Task<Result<string>> ActualizarEstadoAsync(int id, UpdateOrdenDTO dto)
+    {
+        return await _api.PutAsync<UpdateOrdenDTO, Result<string>>($"/api/Orden/{id}", dto);
+    }
 }

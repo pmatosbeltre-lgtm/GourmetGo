@@ -3,10 +3,13 @@ using System.Text;
 using System.Text.Json;
 using GourmetGo.Desktop.Configuration;
 
+
 namespace GourmetGo.Desktop.Helpers;
 
 public class ApiClient
 {
+    private const string BaseUrl = "http://localhost:5043";
+
     private readonly HttpClient _http;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -79,11 +82,19 @@ public class ApiClient
                ?? throw new InvalidOperationException("La API devolvió una respuesta vacía.");
     }
 
-    public async Task DeleteAsync(string relativeUrl)
+    public async Task<TResponse> DeleteAsync<TResponse>(string relativeUrl)
     {
         AttachAuthorizationHeader();
 
+        // Use the standard DeleteAsync which doesn't take a body
         var response = await _http.DeleteAsync(relativeUrl);
+
+        var body = await response.Content.ReadAsStringAsync();
+
+        // This handles errors (404, 500, etc.) by throwing an exception
         response.EnsureSuccessStatusCode();
+
+        return JsonSerializer.Deserialize<TResponse>(body, JsonOptions)
+               ?? throw new InvalidOperationException("La API devolvió una respuesta vacía.");
     }
 }

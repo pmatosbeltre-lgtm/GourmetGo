@@ -1,5 +1,7 @@
 ﻿using GourmetGo.Desktop.Helpers;
 using GourmetGo.Application.DTOs.Operaciones;
+using GourmetGo.Application.Base;
+
 
 namespace GourmetGo.Desktop.Services;
 

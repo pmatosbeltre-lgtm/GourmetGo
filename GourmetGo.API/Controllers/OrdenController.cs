@@ -54,5 +54,35 @@ namespace GourmetGo.API.Controllers
 
             return Ok(ordenes);
         }
+
+        [HttpPut("{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateOrdenDTO dto)
+        {
+            if (id <= 0)
+                return BadRequest("El id debe ser mayor que cero");
+
+            if (dto == null)
+                return BadRequest("El DTO no puede estar vacío");
+
+            var result = await _ordenService.ActualizarEstadoAsync(id, dto);
+
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+
+        }
+
+        [HttpGet("restaurante/{restauranteId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ObtenerPorRestaurante(int restauranteId)
+        {
+            if (restauranteId <= 0)
+                return BadRequest(new { message = "ID inválido" });
+
+            var ordenes = await _ordenService.ObtenerOrdenesPorRestauranteAsync(restauranteId);
+            return Ok(ordenes);
+        }
     }
 }

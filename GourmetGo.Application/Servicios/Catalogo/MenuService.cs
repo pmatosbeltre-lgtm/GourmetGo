@@ -54,4 +54,62 @@ public class MenuService : BaseService, IMenuService
 
         return Result<string>.Ok("Menú creado correctamente");
     }
+
+    public async Task<Result<string>> ActualizarAsync(int id, UpdateMenuDTO dto)
+    {
+        if (id <= 0)
+            return Result<string>.Fail("El ID del menú no es válido.");
+
+        if (dto == null)
+            return Result<string>.Fail("La información del menú no puede estar vacía.");
+
+        if (string.IsNullOrWhiteSpace(dto.Nombre))
+            return Result<string>.Fail("El nombre del menú es obligatorio.");
+
+        var menu = await _repositorio.ObtenerPorIdAsync(id);
+
+        if (menu == null)
+            return Result<string>.Fail("Menú no encontrado.");
+
+        await _repositorio.ActualizarAsync(menu);
+
+        return Result<string>.Ok("Menú actualizado correctamente.");
+    }
+
+    public async Task<Result<string>> EliminarAsync(int id)
+    {
+        if (id <= 0)
+            return Result<string>.Fail("El ID del menú no es válido.");
+
+        var menu = await _repositorio.ObtenerPorIdAsync(id);
+
+        if (menu == null)
+            return Result<string>.Fail("Menú no encontrado.");
+
+        await _repositorio.EliminarAsync(id);
+
+        return Result<string>.Ok("Menú y sus platos eliminados correctamente.");
+    }
+
+    public async Task<Result<MenuDTO>> ObtenerPorIdAsync(int id)
+    {
+        if (id <= 0)
+            return Result<MenuDTO>.Fail("El ID del menú no es válido.");
+
+        var menu = await _repositorio.ObtenerPorIdAsync(id);
+
+        if (menu == null)
+            return Result<MenuDTO>.Fail("Menú no encontrado.");
+
+        var dto = new MenuDTO
+        {
+            Id = menu.Id,
+            Nombre = menu.Nombre,
+            Activo = menu.Activo,
+            RestauranteId = menu.RestauranteId
+        };
+
+        return Result<MenuDTO>.Ok(dto);
+    }
+
 }
