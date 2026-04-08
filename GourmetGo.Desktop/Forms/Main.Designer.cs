@@ -210,6 +210,7 @@
             Controls.Add(TapControl);
             Name = "Main";
             Text = "Main";
+            Load += Main_Load;
             TapControl.ResumeLayout(false);
             tabMain.ResumeLayout(false);
             ResumeLayout(false);

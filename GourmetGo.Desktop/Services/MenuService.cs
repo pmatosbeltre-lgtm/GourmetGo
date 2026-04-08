@@ -1,6 +1,7 @@
 ﻿using GourmetGo.Desktop.Helpers;
 using GourmetGo.Application.DTOs.Catalogo;  
 using GourmetGo.Application.DTOs.Catalogo.Menu;
+using GourmetGo.Application.Base;
 
 namespace GourmetGo.Desktop.Services;
 

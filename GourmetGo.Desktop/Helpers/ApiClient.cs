@@ -3,10 +3,13 @@ using System.Text;
 using System.Text.Json;
 using GourmetGo.Desktop.Configuration;
 
+
 namespace GourmetGo.Desktop.Helpers;
 
 public class ApiClient
 {
+    private const string BaseUrl = "http://localhost:5043";
+
     private readonly HttpClient _http;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
