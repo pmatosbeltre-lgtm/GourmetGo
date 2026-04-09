@@ -28,8 +28,10 @@ namespace GourmetGo.Desktop.Forms
         private OrdenService _ordenService;
         private bool _ordenUiBuilt = false;
 
-        private readonly IReservaService _reservaService;
+        private ReservaViewBuilder _reservaViewBuilder = null!;
+        private bool _reservaUiBuilt = false;
 
+        private readonly ReservaService _reservaService; 
         private bool _menuUiBuilt = false;
 
         private int _restauranteId;
@@ -60,6 +62,8 @@ namespace GourmetGo.Desktop.Forms
             _menuService = new MenuService(api);
             _platoService = new PlatoService(api);
             _ordenService = new OrdenService(api);
+            _reservaService = new ReservaService(api); 
+
 
             // Estilo base del form
             ThemeHelpers.ApplyFormBase(this);
@@ -77,8 +81,8 @@ namespace GourmetGo.Desktop.Forms
             this.WindowState = FormWindowState.Maximized;
             this.FormBorderStyle = FormBorderStyle.Sizable;
 
-          
-           
+
+
         }
         #region
         // =========================
@@ -207,7 +211,12 @@ namespace GourmetGo.Desktop.Forms
             btnReservas.Click += async (_, __) =>
             {
                 ShowView(_viewReservas, "🗓️ Reservas", "Agenda de reservas");
-                await LoadReservasAsync(); 
+                if (!_reservaUiBuilt)
+                {
+                    BuildReservaViewUi(_viewReservas); 
+                    _reservaUiBuilt = true;
+                }
+                await LoadReservasAsync();
             };
 
             var btnAjustes = MakeNavButton("⚙️  Ajustes");
@@ -594,7 +603,7 @@ namespace GourmetGo.Desktop.Forms
 
                 if (resultOrd.Success && resultOrd.Data != null)
                 {
-                    var activas = resultOrd.Data.Count(o => o.Estado != EstadoOrden.Cancelada); 
+                    var activas = resultOrd.Data.Count(o => o.Estado != EstadoOrden.Cancelada);
 
                     // La Card de Órdenes es la segunda (índice 1)
                     var ordCard = cardsHost.Controls[1];
@@ -635,6 +644,9 @@ namespace GourmetGo.Desktop.Forms
         {
             await EnsureRestauranteIdAsync();
 
+            _menuViewBuilder.CmbMenus.Enabled = false;
+            _menuViewBuilder.BtnRefrescarMenu.Enabled = false;
+
             try
             {
                 var result = await _menuService.ObtenerPorRestauranteAsync(_restauranteId);
@@ -642,31 +654,39 @@ namespace GourmetGo.Desktop.Forms
                 if (!result.Success)
                 {
                     MessageHelper.Error(result.Message);
+                    _menuViewBuilder.CmbMenus.DataSource = null;
+                    _menuViewBuilder.GridMenus.DataSource = null;
+                    _menuViewBuilder.GridPlatos.DataSource = null;
                     return;
                 }
 
                 var menus = result.Data ?? new List<MenuDTO>();
 
-                if (_menuViewBuilder?.CmbMenus != null) // Usa el del Builder
-                {
-                    _menuViewBuilder.CmbMenus.DataSource = new List<MenuDTO>(menus);
-                    _menuViewBuilder.CmbMenus.DisplayMember = "Nombre";  
-                    _menuViewBuilder.CmbMenus.ValueMember = "Id";        
-                }
-
-                if (menus.Count > 0)
-                    _menuViewBuilder.CmbMenus.SelectedIndex = 0;
+                _menuViewBuilder.GridMenus.DataSource = menus;
+                _menuViewBuilder.CmbMenus.DataSource = menus; 
+                _menuViewBuilder.CmbMenus.DisplayMember = "Nombre";
+                _menuViewBuilder.CmbMenus.ValueMember = "Id";
 
                 _menuViewBuilder.TxtNuevoMenu.Clear();
 
                 if (menus.Count > 0)
-                    await LoadPlatosAsync();
+                {
+                    _menuViewBuilder.CmbMenus.SelectedIndex = 0;  
+                    await LoadPlatosAsync();  
+                }
                 else
+                {
                     _menuViewBuilder.GridPlatos.DataSource = null;
+                }
             }
             catch (Exception ex)
             {
                 MessageHelper.Error($"Error cargando menús: {ex.Message}");
+            }
+            finally
+            {
+                _menuViewBuilder.CmbMenus.Enabled = true;
+                _menuViewBuilder.BtnRefrescarMenu.Enabled = true;
             }
         }
 
@@ -687,13 +707,11 @@ namespace GourmetGo.Desktop.Forms
             {
                 var result = await _platoService.ObtenerPorMenuAsync(selectedMenu.Id);
 
-                if (result.Success)
+                if (result.Success && result.Data != null)
                 {
-                    _menuViewBuilder.GridPlatos.AutoGenerateColumns = true;
 
-           
                     _menuViewBuilder.GridPlatos.DataSource = null;
-                    _menuViewBuilder.GridPlatos.DataSource = result.Data?.ToList() ?? new List<PlatoDTO>();
+                    _menuViewBuilder.GridPlatos.DataSource = result.Data.ToList();
 
                     _menuViewBuilder.GridPlatos.Refresh();
                 }
@@ -704,7 +722,7 @@ namespace GourmetGo.Desktop.Forms
             }
             catch (Exception ex)
             {
-             
+
                 Console.WriteLine($"Error cargando platos: {ex.Message}");
             }
         }
@@ -734,20 +752,20 @@ namespace GourmetGo.Desktop.Forms
                     MessageHelper.Error(result.Message);
                     return;
                 }
-               
+
                 MessageHelper.Info("Menú creado correctamente.");
                 _menuViewBuilder.TxtNuevoMenu.Clear();
                 await LoadMenusAsync(); // Recarga la lista para que aparezca el nuevo
             }
             catch (System.Text.Json.JsonException)
             {
-               
+
                 MessageHelper.Info("Menú gestionado correctamente.");
                 await LoadMenusAsync();
             }
             catch (Exception ex)
             {
-                
+
                 MessageHelper.Error($"Error: {ex.Message}");
             }
             finally
@@ -757,7 +775,7 @@ namespace GourmetGo.Desktop.Forms
         }
         private async Task CreatePlatoAsync()
         {
-           
+
             if (_menuViewBuilder.CmbMenus.SelectedItem is not MenuDTO m)
             {
                 MessageHelper.Error("Selecciona un menú primero.");
@@ -846,13 +864,13 @@ namespace GourmetGo.Desktop.Forms
                 var result = await _ordenService.ObtenerOrdenesPorRestauranteAsync(_restauranteId);
                 var ordenes = result.Data ?? new List<OrdenDTO>();
 
-            if (_ordenViewBuilder?.CmbFiltroEstado?.SelectedItem != null)
+                if (_ordenViewBuilder?.CmbFiltroEstado?.SelectedItem != null)
 
-            {
-                var estado = _ordenViewBuilder.CmbFiltroEstado.SelectedItem.ToString();
-                if (estado != "Todos" && Enum.TryParse(typeof(EstadoOrden), estado, out var e))
-                    ordenes = ordenes.Where(o => o.Estado == (EstadoOrden)e).ToList();
-            }
+                {
+                    var estado = _ordenViewBuilder.CmbFiltroEstado.SelectedItem.ToString();
+                    if (estado != "Todos" && Enum.TryParse(typeof(EstadoOrden), estado, out var e))
+                        ordenes = ordenes.Where(o => o.Estado == (EstadoOrden)e).ToList();
+                }
                 _ordenViewBuilder.GridOrdenes.DataSource = ordenes;
                 _ordenViewBuilder.LblTotalOrdenes.Text = $"Total: {ordenes.Count}";
             }
@@ -895,39 +913,31 @@ namespace GourmetGo.Desktop.Forms
             }
         }
 
+        private DataGridView _dgvReservas = null!;
+
+        private void BuildReservaViewUi(Panel container)
+        {
+            _reservaViewBuilder = new ReservaViewBuilder(
+                container,
+                async () => await LoadReservasAsync()
+            );
+            _reservaViewBuilder.Build();
+        }
         private async Task LoadReservasAsync()
         {
             try
             {
-                // 1. Usamos el nombre exacto de tu interfaz y pasamos el ID
-                var result = await _reservaService.ObtenerReservasPorRestauranteAsync(_restauranteId);
+                await EnsureRestauranteIdAsync();
+                var result = await _reservaService.ObtenerPorRestauranteAsync(_restauranteId);
+                var reservas = result.Data ?? new List<ReservaDTO>();
 
-                if (result.Success && result.Data != null)
-                {
-                    // 2. Llenamos el Grid
-                    dgvReservas.DataSource = null;
-                    dgvReservas.DataSource = result.Data.ToList();
-                }
+                _reservaViewBuilder.GridReservas.DataSource = null;
+                _reservaViewBuilder.GridReservas.DataSource = reservas;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error Reservas: {ex.Message}");
+                MessageHelper.Error($"Error cargando reservas: {ex.Message}");
             }
-        }
-
-        public void BuildReservaGrid(DataGridView grid, IEnumerable<ReservaDTO> reservas)
-        {
-            grid.DataSource = null; // Limpiamos primero
-            grid.AutoGenerateColumns = false;
-
-            // 1. Definir qué mostrar (DisplayMember conceptual para columnas)
-            grid.Columns.Clear();
-            grid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Id", HeaderText = "ID" });
-            grid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "NombreCliente", HeaderText = "Cliente" });
-            grid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Fecha", HeaderText = "Fecha/Hora" });
-
-            // 2. Asignar el DataSource al final
-            grid.DataSource = reservas.ToList();
         }
     }
 }

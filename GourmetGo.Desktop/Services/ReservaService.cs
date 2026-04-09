@@ -5,7 +5,7 @@ using GourmetGo.Application.Base;
 
 namespace GourmetGo.Desktop.Services;
 
-public class ReservaService
+public class ReservaService 
 {
     private readonly ApiClient _api;
 

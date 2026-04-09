@@ -57,6 +57,8 @@ namespace GourmetGo.Desktop.ViewsBuilders
         {
             _container.SuspendLayout();
             _container.Controls.Clear();
+            _container.AutoScroll = true;
+            _container.Padding = new Padding(0, 0, 20, 0);
 
             // Panel superior: Crear menú
             var topPanel = BuildTopPanel();
@@ -96,7 +98,7 @@ namespace GourmetGo.Desktop.ViewsBuilders
                 ForeColor = ThemeHelpers.Palette.TextMain,
                 Font = ThemeHelpers.Ui(11f)
             };
-            CmbMenus.SelectedIndexChanged += async (_, __) => await _onLoadPlatos();
+            //CmbMenus.SelectedIndexChanged += async (_, __) => await _onLoadPlatos();
             _container.Controls.Add(CmbMenus);
 
             // Panel central: Agregar platos
@@ -402,14 +404,18 @@ namespace GourmetGo.Desktop.ViewsBuilders
             var grid = new DataGridView
             {
                 Location = new Point(18, 598),
-                Size = new Size(_container.ClientSize.Width - 36, 250),
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
-                AutoGenerateColumns = true,
+                Size = new Size(_container.ClientSize.Width - 36, 350),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                AutoGenerateColumns = false,  
                 BackgroundColor = ThemeHelpers.Palette.Card,
                 BorderStyle = BorderStyle.None,
                 CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
                 ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize,
-                EnableHeadersVisualStyles = false
+                EnableHeadersVisualStyles = false,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                ReadOnly = true,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect
             };
 
             grid.ColumnHeadersDefaultCellStyle.BackColor = ThemeHelpers.Palette.Navy;
@@ -420,6 +426,51 @@ namespace GourmetGo.Desktop.ViewsBuilders
             grid.DefaultCellStyle.Font = ThemeHelpers.Ui(10f);
             grid.DefaultCellStyle.SelectionBackColor = ThemeHelpers.Palette.Gold;
             grid.DefaultCellStyle.SelectionForeColor = Color.White;
+
+            grid.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Id",
+                HeaderText = "ID",
+                DataPropertyName = "Id",
+                Width = 50,
+                ReadOnly = true
+            });
+
+            grid.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Nombre",
+                HeaderText = "Nombre",
+                DataPropertyName = "Nombre",
+                Width = 250,
+                ReadOnly = true
+            });
+
+            grid.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Precio",
+                HeaderText = "Precio",
+                DataPropertyName = "Precio",
+                Width = 100,
+                ReadOnly = true
+            });
+
+            grid.Columns.Add(new DataGridViewCheckBoxColumn
+            {
+                Name = "Disponible",
+                HeaderText = "Disponible",
+                DataPropertyName = "Disponible",
+                Width = 100,
+                ReadOnly = true
+            });
+
+            grid.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "MenuId",
+                HeaderText = "MenuId",
+                DataPropertyName = "MenuId",
+                Width = 80,
+                ReadOnly = true
+            });
 
             return grid;
         }

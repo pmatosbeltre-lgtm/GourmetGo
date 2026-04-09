@@ -11,4 +11,6 @@ public class CreateReservaDTO
     public int UsuarioId { get; set; }
 
     public int RestauranteId { get; set; }
+
+    public string NombreCliente { get; set; } = string.Empty;
 }

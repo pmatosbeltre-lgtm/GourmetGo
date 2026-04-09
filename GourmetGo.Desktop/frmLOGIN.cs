@@ -11,6 +11,9 @@ namespace GourmetGo.Desktop.Forms
         public frmLOGIN()
         {
             InitializeComponent();
+
+            this.StartPosition = FormStartPosition.CenterScreen;
+
         }
 
         private void frmLOGIN_Load(object sender, EventArgs e)
