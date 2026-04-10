@@ -1,0 +1,190 @@
+﻿@page "/restaurante/{Id:int}"
+@using GourmetGo.Web.Models
+@using GourmetGo.Web.Services
+@inject RestauranteApiService RestauranteService
+@inject MenuApiService MenuService
+@inject PlatoApiService PlatoService
+@inject NavigationManager Navigation
+
+<div class="container mt-4 mb-5">
+    @if (restaurante == null)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Cargando la experiencia Gourmet...</p>
+        </div>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(mensajeNotificacion))
+        {
+            <div class="alert alert-success shadow-lg position-fixed top-0 end-0 m-3" style="z-index: 2000; border-radius: 15px;">
+                <i class="bi bi-check-circle-fill me-2"></i> @mensajeNotificacion
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card shadow-lg p-3 border-0" style="border-radius: 25px;">
+                    <img src="@(string.IsNullOrEmpty(restaurante.ImagenUrl)
+                                     ? "https://via.placeholder.com/300"
+                                     : restaurante.ImagenUrl.StartsWith("http") ? restaurante.ImagenUrl : $"http://localhost:5043/{restaurante.ImagenUrl}")"
+                     class="img-fluid mb-3 shadow-sm" style="border-radius: 20px; height: 250px; object-fit: cover;">
+                    
+                    <h2 class="fw-bold" style="color: var(--color-firmament);">@restaurante.Nombre</h2>
+                    <span class="badge mb-3" style="background-color: var(--color-accent); color: var(--color-firmament); width: fit-content;">@restaurante.Categoria</span>
+                    
+                    <p class="text-muted"><i class="bi bi-geo-alt-fill me-2"></i>@restaurante.Direccion</p>
+                    <p class="text-muted"><i class="bi bi-people-fill me-2"></i>Capacidad: @restaurante.Capacidad personas</p>
+                    <hr />
+                    <p class="fst-italic text-secondary">"@restaurante.Descripcion"</p>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold" style="color: var(--color-firmament); font-family: 'Georgia', serif;">Menú Exclusivo</h3>
+
+                    <AuthorizeView Roles="Propietario">
+                        <Authorized>
+                            <button class="btn btn-dark px-4 py-2" @onclick="() => mostrarModal = true" style="border-radius: 12px; font-weight: bold;">
+                                <i class="bi bi-plus-lg me-2"></i>Añadir Platillo
+                            </button>
+                        </Authorized>
+                    </AuthorizeView>
+                </div>
+
+                <div class="row g-3">
+                    @if (platos != null && platos.Any())
+                    {
+                        @foreach (var p in platos)
+                        {
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm p-3 d-flex flex-row justify-content-between align-items-center" style="border-radius: 15px;">
+                                    <div>
+                                        <h5 class="fw-bold mb-0">@p.Nombre</h5>
+                                        <small class="text-muted">Especialidad de la casa</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="fw-bold d-block" style="color: var(--color-autumn);">RD$ @p.Precio.ToString("N2")</span>
+                                        <AuthorizeView Roles="Cliente">
+                                            <button class="btn btn-sm btn-outline-primary mt-1" style="border-radius: 8px;">Ordenar</button>
+                                        </AuthorizeView>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12 text-center py-5 border rounded-4 bg-light">
+                            <i class="bi bi-egg-fried display-1 text-muted"></i>
+                            <p class="text-muted mt-3">El menú se está preparando. Vuelve pronto.</p>
+                        </div>
+                    }
+                </div>
+
+                <AuthorizeView Roles="Cliente">
+                    <Authorized>
+                        <div class="mt-5 p-4 border-0 shadow-sm text-center" style="background-color: white; border-radius: 25px;">
+                            <h4 class="fw-bold mb-3">¿Desea asegurar su mesa?</h4>
+                            <button class="btn btn-success w-100 py-3" style="font-weight: bold; border-radius: 15px; font-size: 1.1rem;">
+                                <i class="bi bi-calendar2-check-fill me-2"></i>Confirmar Reserva
+                            </button>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+        </div>
+    }
+</div>
+
+@if (mostrarModal)
+{
+    <div class="modal fade show d-block" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1050;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0" style="border-radius: 25px; padding: 1.5rem;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Nuevo Platillo</h5>
+                    <button type="button" class="btn-close" @onclick="() => mostrarModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">NOMBRE DEL PLATO</label>
+                        <input type="text" @bind="nuevoPlato.Nombre" class="form-control" style="border-radius: 10px; padding: 10px;" placeholder="Ej. Fettuccine Alfredo" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">PRECIO (RD$)</label>
+                        <input type="number" @bind="nuevoPlato.Precio" class="form-control" style="border-radius: 10px; padding: 10px;" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">DESCRIPCIÓN</label>
+                        <textarea @bind="nuevoPlato.Descripcion" class="form-control" style="border-radius: 10px;" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button class="btn btn-link text-muted" @onclick="() => mostrarModal = false" style="text-decoration: none;">Cancelar</button>
+                    <button class="btn btn-primary px-4" @onclick="GuardarPlato" style="border-radius: 12px; font-weight: bold;">
+                        <i class="bi bi-save me-2"></i>Guardar en Menú
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; } 
+    private RestauranteDTO? restaurante;
+    private MenuDTO? menu;
+    private List<PlatoDTO> platos = new();
+
+    private bool mostrarModal = false;
+    private CreatePlatoDTO nuevoPlato = new();
+    private string mensajeNotificacion = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resRest = await RestauranteService.ObtenerPorIdAsync(Id);
+        if (resRest.Success) restaurante = resRest.Data;
+
+        var resMenu = await MenuService.ObtenerPorRestauranteAsync(Id);
+        if (resMenu.Success && resMenu.Data != null)
+        {
+            menu = resMenu.Data;
+            var resPlatos = await PlatoService.ObtenerPorMenuAsync(menu.Id);
+            if (resPlatos.Success) platos = resPlatos.Data ?? new();
+        }
+    }
+
+    private async Task GuardarPlato()
+    {
+        if (menu == null)
+        {
+            mensajeNotificacion = "Error: No hay un menú activo para este restaurante.";
+            return;
+        }
+
+        nuevoPlato.MenuId = menu.Id;
+        var resultado = await PlatoService.CrearPlatoAsync(nuevoPlato);
+
+        if (resultado.Success)
+        {
+            mostrarModal = false;
+            mensajeNotificacion = "¡Plato agregado con éxito!";
+            
+            
+            var resPlatos = await PlatoService.ObtenerPorMenuAsync(menu.Id);
+            if (resPlatos.Success) platos = resPlatos.Data ?? new();
+
+            nuevoPlato = new(); 
+            StateHasChanged();
+            await Task.Delay(3000);
+            mensajeNotificacion = "";
+        }
+        else
+        {
+            mensajeNotificacion = "Error al guardar: " + resultado.Message;
+        }
+    }
+  }

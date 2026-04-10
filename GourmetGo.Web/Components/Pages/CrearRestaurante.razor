@@ -1,0 +1,143 @@
+﻿@page "/restaurantes/crear"
+@using GourmetGo.Web.Models
+@using GourmetGo.Web.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@inject RestauranteApiService RestauranteService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthProvider
+@rendermode InteractiveServer
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg p-5" style="border-radius: 25px; border: none; background-color: white;">
+
+                <div class="text-center mb-4">
+                    <h2 style="color: var(--color-firmament); font-family: 'Georgia', serif; font-weight: bold;">
+                        Registra tu Negocio
+                    </h2>
+                    <p class="text-muted">Únete a la red exclusiva de GourmetGo</p>
+                </div>
+
+                @if (!string.IsNullOrEmpty(mensaje))
+                {
+                    <div class="alert @(exito ? "alert-success" : "alert-danger") text-center" style="border-radius: 12px;">
+                        @mensaje
+                    </div>
+                }
+
+                <EditForm Model="@nuevoRestaurante" OnValidSubmit="GuardarRestaurante">
+                    <DataAnnotationsValidator />
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold" style="font-size: 0.85rem; color: #555;">NOMBRE DEL RESTAURANTE</label>
+                            <InputText @bind-Value="nuevoRestaurante.Nombre" class="form-control" placeholder="Ej. El Mesón de la Cava" style="border-radius: 10px; padding: 12px;" />
+                            <ValidationMessage For="@(() => nuevoRestaurante.Nombre)" class="text-danger small" />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold" style="font-size: 0.85rem; color: #555;">CATEGORÍA CULINARIA</label>
+                            <InputSelect @bind-Value="nuevoRestaurante.Categoria" class="form-select" style="border-radius: 10px; padding: 12px;">
+                                <option value="">Seleccione...</option>
+                                <option value="Sushi">Sushi & Asian</option>
+                                <option value="Carnes">Carnes & Grill</option>
+                                <option value="Italiano">Cocina Italiana</option>
+                                <option value="Internacional">Internacional</option>
+                                <option value="Postres">Postres & Café</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => nuevoRestaurante.Categoria)" class="text-danger small" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label fw-bold" style="font-size: 0.85rem; color: #555;">DIRECCIÓN EXACTA</label>
+                            <InputText @bind-Value="nuevoRestaurante.Direccion" class="form-control" placeholder="Av. Gustavo Mejía Ricart, Santo Domingo" style="border-radius: 10px; padding: 12px;" />
+                            <ValidationMessage For="@(() => nuevoRestaurante.Direccion)" class="text-danger small" />
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold" style="font-size: 0.85rem; color: #555;">CAPACIDAD (PERSONAS)</label>
+                            <InputNumber @bind-Value="nuevoRestaurante.Capacidad" class="form-control" style="border-radius: 10px; padding: 12px;" />
+                            <ValidationMessage For="@(() => nuevoRestaurante.Capacidad)" class="text-danger small" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" style="font-size: 0.85rem; color: #555;">URL DE LA IMAGEN (PORTADA)</label>
+                        <InputText @bind-Value="nuevoRestaurante.ImagenUrl" class="form-control" placeholder="https://miweb.com/foto.jpg" style="border-radius: 10px; padding: 12px;" />
+                        <small class="text-muted">Pega el link de una foto de tu local o de comida deliciosa.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold" style="font-size: 0.85rem; color: #555;">DESCRIPCIÓN BREVE</label>
+                        <InputTextArea @bind-Value="nuevoRestaurante.Descripcion" class="form-control" rows="3" placeholder="Describe la experiencia que ofreces..." style="border-radius: 10px;" />
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn py-3" style="background-color: var(--color-firmament); color: white; font-weight: bold; border-radius: 12px;" disabled="@cargando">
+                            @if (cargando)
+                            {
+                                <span class="spinner-border spinner-border-sm"></span>
+                                <span> Registrando...</span>
+                            }
+                            else
+                            {
+                                <span>Publicar Restaurante</span>
+                            }
+                        </button>
+                        <a href="/" class="btn btn-link text-muted" style="text-decoration: none;">Volver al Lobby</a>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private RestauranteDTO nuevoRestaurante = new RestauranteDTO { Capacidad = 10 };
+    private bool cargando = false;
+    private string mensaje = "";
+    private bool exito = false;
+
+    private async Task GuardarRestaurante()
+    {
+        cargando = true;
+
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim != null)
+        {
+
+            nuevoRestaurante.UsuarioId = int.Parse(userIdClaim.Value);
+        }
+        else
+        {
+            mensaje = "Error: Debes iniciar sesión para registrar un restaurante.";
+            cargando = false;
+            return;
+        }
+
+        var resultado = await RestauranteService.CrearAsync(nuevoRestaurante);
+
+        if (resultado != null && resultado.Success)
+        {
+            exito = true;
+            mensaje = "¡Restaurante registrado con éxito!";
+            await Task.Delay(2000);
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            exito = false;
+            mensaje = resultado?.Message ?? "No se pudo conectar con la API.";
+        }
+        cargando = false;
+    }
+}

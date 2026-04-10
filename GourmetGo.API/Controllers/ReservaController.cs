@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using GourmetGo.Application.Interfaces.Operaciones;
 using GourmetGo.Application.DTOs.Operaciones;
 
-namespace GourmetGo.Web.Controllers
+namespace GourmetGo.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -19,6 +19,7 @@ namespace GourmetGo.Web.Controllers
 
         // Crear una reserva
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Crear([FromBody] CreateReservaDTO dto)
         {
             var result = await _reservaService.CrearReservaAsync(dto);
@@ -48,6 +49,19 @@ namespace GourmetGo.Web.Controllers
         public async Task<IActionResult> ObtenerPorRestaurante(int restauranteId)
         {
             var result = await _reservaService.ObtenerReservasPorRestauranteAsync(restauranteId);
+
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+        
+        [HttpGet("usuario/{usuarioId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ObtenerPorUsuario(int usuarioId)
+        {
+            
+            var result = await _reservaService.ObtenerReservasPorUsuarioAsync(usuarioId);
 
             if (!result.Success)
                 return BadRequest(result);

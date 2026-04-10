@@ -1,0 +1,89 @@
+﻿@page "/login"
+@using GourmetGo.Web.Models
+@using GourmetGo.Web.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@rendermode InteractiveServer
+@inject UsuarioApiService UsuarioService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+
+
+<div class="login-container">
+    <div class="login-card">
+        <h2>GourmetGo</h2>
+
+        @if (mostrarError)
+        {
+            <div class="alert alert-danger text-center" role="alert" style="background-color: #ff6b6b; color: white; border: none;">
+                Correo o contraseña incorrectos.
+            </div>
+        }
+
+        <EditForm Model="@loginModel" OnValidSubmit="ProcesarLogin" FormName="loginForm">
+            <DataAnnotationsValidator /> <div class="mb-3">
+                <label class="form-label">Correo Electrónico</label>
+                <InputText @bind-Value="loginModel.Correo" class="form-control" placeholder="ejemplo@correo.com" />
+                <ValidationMessage For="@(() => loginModel.Correo)" style="color: #ff6b6b; font-size: 0.85em; margin-top: 5px; display: block;" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Contraseña</label>
+                <InputText @bind-Value="loginModel.Contrasena" type="password" class="form-control" placeholder="********" />
+                <ValidationMessage For="@(() => loginModel.Contrasena)" style="color: #ff6b6b; font-size: 0.85em; margin-top: 5px; display: block;" />
+            </div>
+
+            <button type="submit" class="btn login-btn w-100" disabled="@cargando">
+                @if (cargando)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span> Verificando...</span>
+                }
+                else
+                {
+                    <span>Iniciar Sesión</span>
+                }
+            </button>
+        </EditForm>
+
+        <div class="text-center mt-4" style="font-size: 0.9em;">
+            <p>¿No tienes cuenta? <a href="/registro" style="color: var(--color-autumn); text-decoration: underline;">Regístrate aquí</a></p>
+            <p>¿Eres propietario? <a href="/socios" style="color: var(--color-autumn); font-weight: bold;">Únete como Socio</a></p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginRequestDTO loginModel = new LoginRequestDTO();
+    private bool cargando = false;
+    private bool mostrarError = false;
+    private string mensajeError = "";
+
+    private async Task ProcesarLogin()
+    {
+        cargando = true;
+        mostrarError = false;
+
+        var resultado = await UsuarioService.LoginAsync(loginModel);
+
+        if (resultado != null && resultado.Success)
+        {
+            var customProvider = (CustomAuthStateProvider)AuthStateProvider;
+
+
+            customProvider.MarkUserAsAuthenticated(
+                resultado.Data.Email,
+                resultado.Data.Rol,
+                resultado.Data.UserId.ToString()
+            );
+
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            mensajeError = resultado?.Message ?? "Datos incorrectos.";
+            mostrarError = true;
+        }
+        cargando = false;
+    }
+}
+

@@ -10,4 +10,5 @@ public interface IReservaService
     Task<Result<ReservaDTO>> ObtenerReservaPorIdAsync(int id);
 
     Task<Result<IEnumerable<ReservaDTO>>> ObtenerReservasPorRestauranteAsync(int restauranteId);
+    Task<Result<List<ReservaDTO>>> ObtenerReservasPorUsuarioAsync(int usuarioId);
 }

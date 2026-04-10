@@ -4,7 +4,7 @@ using GourmetGo.Application.Interfaces.Catalogo;
 using GourmetGo.Application.DTOs.Catalogo;
 using GourmetGo.Application.DTOs.Catalogo.Restaurante;
 
-namespace GourmetGo.Web.Controllers
+namespace GourmetGo.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -42,6 +42,7 @@ namespace GourmetGo.Web.Controllers
 
         // Crear un nuevo restaurante
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Crear([FromBody] CreateRestauranteDTO dto)
         {
             var result = await _restauranteService.CrearAsync(dto);

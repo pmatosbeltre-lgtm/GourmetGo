@@ -1,0 +1,156 @@
+﻿@page "/menu/{MenuId:int}"
+@using GourmetGo.Web.Models
+@using GourmetGo.Web.Services
+@inject PlatoApiService PlatoService
+@rendermode InteractiveServer
+
+<div class="container mt-4 mb-5">
+
+    @* --- CABECERA --- *@
+    <div class="card shadow-sm mb-4" style="border: none; border-radius: 20px; background-color: var(--color-firmament); color: var(--color-autumn); overflow: hidden;">
+        <div class="row g-0 align-items-center">
+            <div class="col-md-8 p-5">
+                <h6 style="color: var(--color-accent); font-weight: bold; letter-spacing: 2px;">GESTIÓN DE MENÚ</h6>
+                <h1 style="font-family: 'Georgia', serif; font-style: italic; font-weight: bold;">Panel del Restaurante</h1>
+                <p class="opacity-75 mb-0">Agrega nuevos platos a tu selección para que los clientes puedan verlos.</p>
+            </div>
+            <div class="col-md-4 text-center d-none d-md-block">
+                <span style="font-size: 5rem;">👨‍🍳</span>
+            </div>
+        </div>
+    </div>
+
+    @* --- FORMULARIO DE AGREGAR (AJUSTADO A LA API) --- *@
+    <div class="card shadow-sm mb-5" style="border: none; border-radius: 20px; border-left: 5px solid var(--color-accent);">
+        <div class="card-body p-4">
+            <h4 class="mb-4" style="color: var(--color-firmament); font-weight: bold;">✨ Agregar Nuevo Plato</h4>
+
+            <EditForm Model="@nuevoPlato" OnValidSubmit="ManejarGuardarPlato" FormName="formNuevoPlato">
+                <DataAnnotationsValidator />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">NOMBRE DEL PLATO</label>
+                        <InputText @bind-Value="nuevoPlato.Nombre" class="form-control" placeholder="Ej. Sushi Dinamita" style="border-radius: 10px;" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">PRECIO (RD$)</label>
+                        <InputNumber @bind-Value="nuevoPlato.Precio" class="form-control" style="border-radius: 10px;" />
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn w-100" style="background-color: var(--color-accent); color: var(--color-firmament); font-weight: bold; border-radius: 10px;" disabled="@cargando">
+                            @if (cargando)
+                            {
+                                <span class="spinner-border spinner-border-sm"></span>
+                            }
+                            else
+                            {
+                                <span>+ Añadir</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+                <ValidationSummary class="text-danger small mt-2" />
+            </EditForm>
+
+            @if (!string.IsNullOrEmpty(mensaje))
+            {
+                <div class="alert mt-3 @(exito ? "alert-success" : "alert-danger") shadow-sm" style="border-radius: 12px;">
+                    @mensaje
+                </div>
+            }
+        </div>
+    </div>
+
+    @* --- LISTA DE PLATOS --- *@
+    <h3 class="mb-4" style="color: var(--color-firmament); font-family: 'Georgia', serif;">Carta Actual</h3>
+
+    @if (platos == null)
+    {
+        <div class="text-center mt-5">
+            <div class="spinner-border" style="color: var(--color-accent);" role="status"></div>
+            <p class="mt-2 text-muted">Cargando delicias...</p>
+        </div>
+    }
+    else if (!platos.Any())
+    {
+        <div class="alert alert-info text-center" style="background-color: white; border: 1px dashed var(--color-accent); border-radius: 10px;">
+            Aún no hay platos registrados. ¡Comienza agregando uno arriba!
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var p in platos)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm border-0" style="border-radius: 15px;">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 style="color: var(--color-firmament); font-weight: bold;">@p.Nombre</h5>
+                                <span style="color: var(--color-accent); font-weight: bold;">RD$ @p.Precio.ToString("N2")</span>
+                            </div>
+                            
+                            <p class="text-muted small">@p.Descripcion</p>
+
+                            <div class="mt-auto pt-3">
+                                <span class="badge @(p.Disponible ? "bg-success" : "bg-secondary")">
+                                    @(p.Disponible ? "Disponible" : "Agotado")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int MenuId { get; set; }
+
+    private List<PlatoDTO> platos;
+    private CreatePlatoDTO nuevoPlato = new CreatePlatoDTO();
+    private bool cargando = false;
+    private string mensaje = "";
+    private bool exito = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarPlatos();
+        nuevoPlato.MenuId = MenuId;
+    }
+
+    private async Task CargarPlatos()
+    {
+        var resultado = await PlatoService.ObtenerPorMenuAsync(MenuId);
+        if (resultado.Success)
+        {
+            platos = resultado.Data;
+        }
+    }
+
+    private async Task ManejarGuardarPlato()
+    {
+      
+    
+        cargando = true;
+        nuevoPlato.MenuId = MenuId;
+
+        var resultado = await PlatoService.CrearPlatoAsync(nuevoPlato);
+
+        if (resultado.Success)
+        {
+            exito = true;
+            mensaje = "¡Plato añadido con éxito!";
+            nuevoPlato = new CreatePlatoDTO { MenuId = MenuId }; 
+            await CargarPlatos(); 
+        }
+        else
+        {
+            exito = false;
+            mensaje = resultado.Message;
+        }
+        cargando = false;
+    }
+}

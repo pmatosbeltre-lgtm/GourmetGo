@@ -1,7 +1,310 @@
 ﻿@page "/"
+@using GourmetGo.Web.Models
+@using GourmetGo.Web.Services
+@inject RestauranteApiService RestauranteService
 
-<PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<style>
 
-Welcome to your new app.
+    /* HERO */
+
+    .gourmet-welcome {
+        text-align: center;
+        padding: 3.5rem 1.5rem;
+        background: radial-gradient(circle at center, rgba(150, 100, 90, 0.18) 0%, rgba(10, 15, 35, 0.08) 100%);
+        margin-bottom: 2.5rem;
+        border-radius: 30px;
+    }
+
+    .gourmet-title {
+        font-family: 'Georgia', serif;
+        font-weight: bold;
+        font-size: 3rem;
+        color: var(--color-firmament);
+        letter-spacing: -1px;
+        line-height: 1.1;
+    }
+
+    .gourmet-subtitle {
+        color: var(--color-accent);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 3px;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    /* TARJETAS */
+
+    .gourmet-card {
+        border: none;
+        border-radius: 20px;
+        background-color: white;
+        transition: all 0.35s ease;
+        overflow: hidden;
+    }
+
+        .gourmet-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 18px 35px rgba(10, 15, 35, 0.1) !important;
+        }
+
+    .restaurant-img {
+        height: 180px !important;
+        object-fit: cover;
+    }
+
+
+    .gourmet-card .card-body {
+        padding: 1.3rem !important;
+    }
+
+
+    .gourmet-card h4 {
+        font-size: 1.2rem;
+        font-family: 'Georgia', serif;
+        font-weight: bold;
+        color: var(--color-firmament);
+    }
+
+
+    .card-category {
+        color: var(--color-accent);
+        font-weight: bold;
+        font-size: 0.70rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+
+    .card-location {
+        color: #777;
+        font-size: 0.8rem;
+    }
+
+
+    /* BOTON */
+
+    .btn-gourmet {
+        background-color: var(--color-firmament);
+        color: var(--color-autumn);
+        font-weight: bold;
+        border-radius: 12px;
+        padding: 10px;
+        border: 2px solid var(--color-firmament);
+        transition: all 0.3s ease;
+    }
+
+
+        .btn-gourmet:hover {
+            background-color: transparent;
+            color: var(--color-firmament);
+        }
+
+
+
+    /* FILTROS */
+
+    
+    .filters-bar {
+        background-color: var(--color-firmament) !important; 
+        padding: 18px 25px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        border: 1px solid rgba(250, 228, 207, 0.1);
+    }
+
+    .filter-title {
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+        color: var(--color-accent); 
+        font-weight: 700;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .filter-btn {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--color-autumn); 
+        border: 1px solid rgba(250, 228, 207, 0.2);
+        border-radius: 12px;
+        padding: 8px 20px;
+        margin-right: 8px;
+        margin-top: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background-color: var(--color-accent) !important; 
+            border-color: var(--color-accent) !important;
+            color: var(--color-firmament) !important; 
+        }
+
+    .filters-bar .form-select {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(250, 228, 207, 0.2);
+        border-radius: 12px;
+    }
+
+        .filters-bar .form-select option {
+            background-color: var(--color-firmament) !important; 
+            color: var(--color-autumn) !important; 
+            padding: 10px;
+        }
+
+        
+        .filters-bar .form-select:focus {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25);
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+        
+
+</style>
+
+
+
+<div class="container mt-4 mb-5">
+
+
+    <!-- HERO -->
+
+    <div class="gourmet-welcome shadow-sm">
+
+        <span class="gourmet-subtitle">Experiencias Gastronómicas Exclusivas</span>
+
+        <h1 class="gourmet-title">Reserva tu mesa,<br>anticipa tu sabor</h1>
+
+
+
+        <p class="mt-4 mx-auto text-muted" style="max-width: 600px; font-size: 1.05rem;">
+
+            GourmetGo es tu pasaporte a los mejores rincones culinarios. Elige tu restaurante favorito, asegura tu lugar y ordena antes de llegar.
+
+        </p>
+
+
+
+        <div class="mt-4">
+
+            <button class="btn btn-gourmet px-5 py-2">Explorar Restaurantes</button>
+
+        </div>
+
+    </div>
+
+    <!-- BARRA DE FILTROS -->
+
+    <div class="filters-bar mb-4">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+
+
+
+            <div>
+
+                <span class="filter-title">FILTRAR POR</span>
+
+                <div class="mt-2">
+
+                    <button class="filter-btn active">Todos</button>
+
+                    <button class="filter-btn">Sushi</button>
+
+                    <button class="filter-btn">Carnes</button>
+
+                    <button class="filter-btn">Italiano</button>
+
+                    <button class="filter-btn">Internacional</button>
+
+                    <button class="filter-btn">Postres</button>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="d-flex align-items-center gap-3">
+
+                <select class="form-select" style="border-radius:12px; width:200px;">
+
+                    <option>Ordenar por</option>
+
+                    <option>Más populares</option>
+
+                    <option>Mejor valorados</option>
+
+                    <option>Más cercanos</option>
+
+                </select>
+
+
+
+                <span class="text-muted d-none d-md-block" style="font-size:0.9rem;">
+
+                    Mostrando <b style="color:var(--color-firmament)">3</b> locales
+
+                </span>
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- RESTAURANTES -->
+
+    <div class="row">
+        @if (restaurantes == null)
+        {
+            <div class="text-center w-100 mt-5">
+                <div class="spinner-border" style="color: var(--color-accent);" role="status"></div>
+                <p class="mt-2 text-muted">Buscando los mejores sabores...</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var rest in restaurantes)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card gourmet-card shadow-sm h-100">
+                        <img src="@(string.IsNullOrEmpty(rest.ImagenUrl) ? $"https://picsum.photos/seed/{rest.Id}/600/400" : rest.ImagenUrl)"
+                             class="card-img-top restaurant-img" alt="@rest.Nombre">
+                        <div class="card-body d-flex flex-column">
+                            <span class="card-category">Restaurante • GourmetGo</span>
+                            <h4 class="mt-2 mb-1">@rest.Nombre</h4>
+                            <p class="card-location mb-3">📍 @rest.Direccion</p>
+                            <div class="mt-auto pt-2 border-top">
+                                <a href="/menu/@rest.Id" class="btn btn-gourmet w-100 text-center" style="text-decoration:none">
+                                    Ver Menú & Reservar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+
+</div>
+@code {
+    private List<RestauranteDTO> restaurantes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        restaurantes = await RestauranteService.ObtenerTodosAsync();
+    }
+}

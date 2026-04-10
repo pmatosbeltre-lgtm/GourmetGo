@@ -1,0 +1,168 @@
+﻿@page "/reservar/{RestauranteId:int}"
+@using GourmetGo.Web.Models
+@using GourmetGo.Web.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthProvider
+@inject ReservaApiService ReservaService
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0" style="border-radius: 25px; overflow: hidden; background-color: white;">
+
+                <div class="p-4 text-center" style="background-color: var(--color-firmament); color: var(--color-autumn);">
+                    <h2 style="font-family: 'Georgia', serif; font-style: italic;">Confirmar Reserva</h2>
+                    <p class="mb-0 opacity-75">Estás a un paso de una gran experiencia</p>
+                </div>
+
+                <div class="card-body p-5">
+                    <EditForm Model="@reservaModel" OnValidSubmit="EnviarReserva" FormName="reservaForm">
+                        <DataAnnotationsValidator />
+
+                        <div class="mb-5">
+                            <h5 style="color: var(--color-accent); font-weight: bold; font-size: 0.9rem; letter-spacing: 2px;">PASO 1: ¿CUÁNDO?</h5>
+                            <hr class="mt-1 mb-4 opacity-25">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Fecha</label>
+
+                                    <InputDate TValue="DateTime?" @bind-Value="reservaModel.Fecha" class="form-control gourmet-input" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Hora</label>
+
+                                    <input type="time" class="form-control gourmet-input"
+                                           value="@(reservaModel.Hora?.ToString(@"hh\:mm"))"
+                                           @onchange="@(e => { if (TimeSpan.TryParse(e.Value?.ToString(), out var result)) reservaModel.Hora = result; })" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <h5 style="color: var(--color-accent); font-weight: bold; font-size: 0.9rem; letter-spacing: 2px;">PASO 2: ¿CUÁNTOS?</h5>
+                            <hr class="mt-1 mb-4 opacity-25">
+                            <div class="d-flex align-items-center gap-4">
+
+                                <button type="button" class="btn btn-outline-secondary rounded-circle"
+                                        @onclick="@(() => CambiarPersonas(-1))" style="width: 45px; height: 45px;">
+                                    -
+                                </button>
+
+                                <div class="text-center">
+                                    <span style="font-size: 2rem; font-weight: bold; color: var(--color-firmament);">@reservaModel.CantidadPersonas</span>
+                                    <p class="mb-0 text-muted">Personas</p>
+                                </div>
+
+
+                                <button type="button" class="btn btn-outline-secondary rounded-circle"
+                                        @onclick="@(() => CambiarPersonas(1))" style="width: 45px; height: 45px;">
+                                    +
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn w-100 py-3" disabled="@cargando"
+                                    style="background-color: var(--color-firmament); color: var(--color-autumn); font-weight: bold; border-radius: 15px; font-size: 1.1rem;">
+                                @if (cargando)
+                                {
+                                    <span class="spinner-border spinner-border-sm"></span>
+                                }
+                                else
+                                {
+
+                                    <span>Confirmar Reservación</span>
+                                }
+                            </button>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(mensaje))
+                        {
+                            <div class="alert @(exito ? "alert-success" : "alert-danger") mt-4 text-center">@mensaje</div>
+                        }
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .gourmet-input {
+        border-radius: 12px !important;
+        padding: 12px !important;
+        border: 1px solid #eee !important;
+    }
+
+        .gourmet-input:focus {
+            border-color: var(--color-accent) !important;
+            box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.1) !important;
+        }
+</style>
+
+@code {
+    [Parameter] public int RestauranteId { get; set; }
+    private CreateReservaDTO reservaModel = new CreateReservaDTO();
+    private bool cargando = false;
+    private string mensaje = "";
+    private bool exito = false;
+
+    
+    protected override async Task OnInitializedAsync()
+    {
+        reservaModel.RestauranteId = RestauranteId;
+        reservaModel.CantidadPersonas = 2; 
+
+       
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            
+            var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+            {
+                reservaModel.UsuarioId = userId;
+            }
+        }
+    }
+
+    private void CambiarPersonas(int cambio)
+    {
+        var nuevoValor = reservaModel.CantidadPersonas + cambio;
+        if (nuevoValor >= 1 && nuevoValor <= 20)
+        {
+            reservaModel.CantidadPersonas = nuevoValor;
+        }
+    }
+
+    private async Task EnviarReserva()
+    {
+        cargando = true;
+        mensaje = "";
+
+        
+        reservaModel.RestauranteId = RestauranteId;
+
+        var result = await ReservaService.CrearReservaAsync(reservaModel);
+
+        if (result != null && result.Success)
+        {
+            exito = true;
+            mensaje = "¡Reserva confirmada con éxito! Te esperamos.";
+
+            
+        }
+        else
+        {
+            exito = false;
+            mensaje = result?.Message ?? "Error al procesar la reserva. Verifica los datos.";
+        }
+
+        cargando = false;
+    }
+}
+}

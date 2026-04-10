@@ -25,7 +25,10 @@ public class RestauranteService : BaseService, IRestauranteService
             Id = r.Id,
             Nombre = r.Nombre,
             Direccion = r.Direccion,
-            Capacidad = r.Capacidad
+            Capacidad = r.Capacidad,
+            Categoria = r.Categoria,
+            Descripcion = r.Descripcion,
+            ImagenUrl = r.ImagenUrl
         }).ToList();
 
         return Result<List<RestauranteDTO>>.Ok(data);
@@ -67,14 +70,19 @@ public class RestauranteService : BaseService, IRestauranteService
             return Result<string>.Fail("La capacidad del restaurante debe ser mayor a cero.");
 
         var restaurante = new Restaurante(
-            dto.Nombre,
-            dto.Direccion,
-            dto.Capacidad,
-            Domain.Enums.EstadoRestaurante.Activo
-        );
+        dto.Nombre,
+        dto.Direccion,
+        dto.Capacidad,
+        Domain.Enums.EstadoRestaurante.Activo
+    )
+        {
+            
+            Categoria = dto.Categoria,
+            Descripcion = dto.Descripcion,
+            ImagenUrl = dto.ImagenUrl
+        };
 
         await _repositorio.AgregarAsync(restaurante);
-
         return Result<string>.Ok("Restaurante creado correctamente");
     }
 }

@@ -49,3 +49,111 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+/*:root {
+    --color-autumn: #fae4cf;
+    --color-firmament: #1d2b4f;
+     
+}*/
+
+/* Ejemplo del body */
+body {
+    background-color: var(--color-autumn);
+    color: var(--color-firmament);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+} 
+/* Variables de color de GourmetGo */
+:root {
+    --color-autumn: #fae4cf;
+    --color-firmament: #1d2b4f;
+    --color-accent: #d4a373;
+}
+
+/* Estilos específicos para la página de Login */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh; /* Para que quede centrado en la pantalla */
+}
+
+.login-card {
+    background-color: var(--color-firmament);
+    color: var(--color-autumn);
+    padding: 3rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 450px;
+}
+
+.login-card h2 {
+    font-family: 'Georgia', serif; /* Un toque de fuente elegante similar a tu imagen */
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 2rem;
+    letter-spacing: 1px;
+}
+
+/* Estilo para las cajas de texto */
+.login-card .form-control {
+    background-color: rgba(250, 228, 207, 0.1);
+    border: 1px solid var(--color-autumn);
+    color: var(--color-autumn);
+}
+
+.login-card .form-control:focus {
+    background-color: rgba(250, 228, 207, 0.2);
+    box-shadow: none;
+    border-color: #fff;
+    color: #fff;
+}
+
+/* Estilo para el botón principal */
+.login-btn {
+    background-color: var(--color-accent);
+    color: var(--color-firmament);
+    font-weight: bold;
+    border: none;
+    padding: 12px;
+    margin-top: 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+    .login-btn:hover {
+        background-color: #c08d5d;
+        color: var(--color-firmament);
+        transform: translateY(-2px);
+    }
+.custom-input {
+    border-radius: 12px !important;
+    border: 1px solid #e0e0e0 !important;
+    padding: 12px 15px !important;
+    background-color: #fcfcfc !important;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+    .custom-input:focus {
+        border-color: var(--color-accent) !important;
+        box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.1) !important;
+        background-color: white !important;
+    }
+
+.form-label i {
+    color: #888; 
+}
+:root {
+    
+    --color-crema: #f8f4f0;
+    --color-otoño: #d35400; 
+    --color-noche: #1a2f4b; 
+    --color-blanco: #ffffff;
+}
+
+body {
+    background-color: var(--color-crema);
+    color: var(--color-noche);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+}

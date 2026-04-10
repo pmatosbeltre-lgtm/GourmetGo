@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using GourmetGo.Application.Interfaces.Auditoria;
 using GourmetGo.Application.DTOs.Auditoria;
 
-namespace GourmetGo.Web.Controllers
+namespace GourmetGo.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

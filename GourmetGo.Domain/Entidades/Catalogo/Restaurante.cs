@@ -9,6 +9,10 @@ public class Restaurante : BaseEntity
     public string Nombre { get; private set; } 
     public string Direccion { get; private set; }
     public int Capacidad { get; private set; }
+    public string? Categoria { get; set; }
+    public string? Descripcion { get; set; }
+    public string? ImagenUrl { get; set; }
+
     public EstadoRestaurante Estado { get; private set; }
 
     //Relaciones
