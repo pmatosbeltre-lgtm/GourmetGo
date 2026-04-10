@@ -4,7 +4,7 @@ using GourmetGo.Application.Interfaces.Catalogo;
 using GourmetGo.Application.DTOs.Catalogo;
 using GourmetGo.Application.DTOs.Catalogo.Menu;
 
-namespace GourmetGo.Web.Controllers
+namespace GourmetGo.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -30,6 +30,7 @@ namespace GourmetGo.Web.Controllers
 
         // Crear un nuevo menú
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Crear([FromBody] CreateMenuDTO dto)
         {
             var result = await _menuService.CrearAsync(dto);

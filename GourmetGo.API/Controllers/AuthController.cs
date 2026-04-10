@@ -1,6 +1,5 @@
 ﻿using GourmetGo.Application.DTOs.Seguridad;
 using GourmetGo.Domain.Interfaces;
-using GourmetGo.Persistence.Repositories.Seguridad;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -30,11 +29,21 @@ public class AuthController : ControllerBase
             return BadRequest("Correo y contraseña son requeridos.");
 
         var usuario = await _usuarioRepositorio.ObtenerPorCorreoAsync(dto.Correo);
+
         if (usuario == null || usuario.Contrasena != dto.Contrasena)
             return Unauthorized("Credenciales inválidas.");
 
         var token = GenerateJwtToken(usuario);
-        return Ok(new LoginResponseDTO { Token = token, Expiration = DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:ExpiresMinutes")) });
+
+        
+        return Ok(new LoginResponseDTO
+        {
+            Token = token,
+            Email = usuario.Correo,
+            Rol = usuario.Rol.ToString(), 
+            UserId = usuario.Id,          
+            Expiration = DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:ExpiresMinutes"))
+        });
     }
 
     private string GenerateJwtToken(GourmetGo.Domain.Entidades.Usuario usuario)
@@ -50,7 +59,8 @@ public class AuthController : ControllerBase
             new Claim(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, usuario.Correo),
             new Claim(ClaimTypes.Name, usuario.Nombre),
-            new Claim(ClaimTypes.Role, usuario.Rol.ToString())
+            new Claim(ClaimTypes.Role, usuario.Rol.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()) 
         };
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));

@@ -15,7 +15,7 @@ namespace GourmetGo.API.Middlewares
             _logger = logger;
         }
 
-        public async Task Invokeasync(HttpContext httpContext)
+        public async Task InvokeAsync(HttpContext httpContext)
         {
             try
             {

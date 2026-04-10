@@ -33,7 +33,7 @@ public class PagoController : ControllerBase
     }
 
     [HttpPost]
-
+    [AllowAnonymous]
     public async Task<IActionResult> Post([FromBody] CreatePagoDTO dto)
     {
         if (dto is null)

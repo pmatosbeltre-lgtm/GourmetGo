@@ -1,0 +1,122 @@
+﻿@page "/registro"
+@using GourmetGo.Web.Models
+@using GourmetGo.Web.Services
+@inject UsuarioApiService UsuarioService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 85vh;">
+    <div class="card shadow-sm p-5" style="border: none; border-radius: 20px; width: 100%; max-width: 500px; background-color: white;">
+
+        <div class="text-center mb-4">
+            <h2 style="color: var(--color-firmament); font-family: 'Georgia', serif; font-weight: bold; font-style: italic;">
+                GourmetGo
+            </h2>
+            <h4 style="color: var(--color-firmament); font-weight: 600;">Crear Cuenta</h4>
+            <p class="text-muted" style="font-size: 0.9rem;">Únete a nosotros y reserva tu experiencia gastronómica.</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(mensajeApi))
+        {
+            <div class="alert @(registroExitoso ? "alert-success" : "alert-danger") text-center py-2" style="border-radius: 10px; font-size: 0.9rem;">
+                @mensajeApi
+            </div>
+        }
+
+        <EditForm Model="@registroModel" OnValidSubmit="ProcesarRegistro" FormName="registroForm">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label class="form-label text-muted fw-bold" style="font-size: 0.82rem; letter-spacing: 1px;">
+                    <i class="bi bi-person-fill me-2"></i>NOMBRE COMPLETO
+                </label>
+                <InputText @bind-Value="registroModel.Nombre" class="form-control custom-input" placeholder="Ej. Juan Pérez" />
+                <ValidationMessage For="@(() => registroModel.Nombre)" class="text-danger small" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-muted fw-bold" style="font-size: 0.82rem; letter-spacing: 1px;">
+                    <i class="bi bi-envelope-at-fill me-2"></i>CORREO ELECTRÓNICO
+                </label>
+                <InputText @bind-Value="registroModel.Correo" class="form-control custom-input" placeholder="usuario@gourmetgo.com" />
+                <ValidationMessage For="@(() => registroModel.Correo)" class="text-danger small" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-muted fw-bold" style="font-size: 0.82rem; letter-spacing: 1px;">
+                    <i class="bi bi-briefcase-fill me-2"></i>TIPO DE PERFIL
+                </label>
+                <InputSelect @bind-Value="registroModel.Rol" class="form-select custom-input">
+                    <option value="@RolUsuario.Cliente">Comensal / Cliente</option>
+                    <option value="@RolUsuario.Propietario">Socio Restaurador / Propietario</option>
+                </InputSelect>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-muted fw-bold" style="font-size: 0.82rem; letter-spacing: 1px;">
+                    <i class="bi bi-shield-lock-fill me-2"></i>CONTRASEÑA
+                </label>
+                <InputText @bind-Value="registroModel.Contrasena" type="password" class="form-control custom-input" placeholder="••••••••" />
+                <ValidationMessage For="@(() => registroModel.Contrasena)" class="text-danger small" />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label text-muted fw-bold" style="font-size: 0.82rem; letter-spacing: 1px;">
+                    <i class="bi bi-check-circle-fill me-2"></i>CONFIRMAR CONTRASEÑA
+                </label>
+                <InputText @bind-Value="registroModel.ConfirmarContrasena" type="password" class="form-control custom-input" placeholder="••••••••" />
+                <ValidationMessage For="@(() => registroModel.ConfirmarContrasena)" class="text-danger small" />
+            </div>
+            <button type="submit" class="btn w-100" disabled="@cargando" style="background-color: var(--color-accent); color: var(--color-firmament); font-weight: bold; border-radius: 10px; padding: 12px; font-size: 1.05rem;">
+                @if (cargando)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span> Registrando...</span>
+                }
+                else
+                {
+                    <span>Crear Cuenta</span>
+                }
+            </button>
+        </EditForm>
+
+        <div class="text-center mt-4 pt-2 border-top">
+            <p class="text-muted" style="font-size: 0.9rem;">
+                ¿Ya tienes cuenta?
+                <a href="/login" style="color: var(--color-accent); font-weight: bold; text-decoration: none;">Inicia sesión</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private CreateUsuarioDTO registroModel = new CreateUsuarioDTO { Rol = RolUsuario.Cliente };
+    private bool cargando = false;
+    private string mensajeApi = "";
+    private bool registroExitoso = false;
+
+    private async Task ProcesarRegistro()
+    {
+        cargando = true;
+        mensajeApi = "";
+
+        var resultado = await UsuarioService.CrearUsuarioAsync(registroModel);
+
+        if (resultado != null && resultado.Success)
+        {
+            registroExitoso = true;
+            mensajeApi = "¡Registro exitoso! Redirigiendo...";
+            StateHasChanged();
+
+            await Task.Delay(1500);
+            Navigation.NavigateTo("/login");
+        }
+        else
+        {
+            registroExitoso = false;
+            mensajeApi = resultado?.Message ?? "Error al conectar.";
+        }
+        cargando = false;
+    }
+}

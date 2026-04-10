@@ -87,19 +87,22 @@ builder.Services.AddCors(options =>
         });
 });
 
+
+
 var app = builder.Build();
 
-app.UseMiddleware<GourmetGo.API.Middlewares.ExceptionMiddleware>();
 
+//app.UseMiddleware<GourmetGo.API.Middlewares.ExceptionMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
+
 app.UseCors("AllowAll");
-app.UseHttpsRedirection();
+
+//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.Run(); 
+app.Run();

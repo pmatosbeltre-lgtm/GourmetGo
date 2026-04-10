@@ -1,0 +1,92 @@
+﻿@page "/pagar/{OrdenId:int}/{Monto:decimal}"
+@using GourmetGo.Web.Models
+@using GourmetGo.Web.Services
+@inject PagoApiService PagoService
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0" style="border-radius: 25px;">
+                <div class="p-4 text-center text-white" style="background-color: var(--color-noche); border-radius: 25px 25px 0 0;">
+                    <h3 class="fw-bold mb-0">Finalizar Pago</h3>
+                    <p class="opacity-75 mb-0">Orden #@OrdenId</p>
+                </div>
+
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h1 class="display-4 fw-bold" style="color: var(--color-noche);">RD$ @Monto</h1>
+                        <p class="text-muted">Total a pagar</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Método de Pago</label>
+                        <select @bind="pagoModel.MetodoPago" class="form-select gourmet-input">
+                            <option value="Tarjeta">Tarjeta de Crédito / Débito</option>
+                            <option value="Efectivo">Efectivo (En local)</option>
+                            <option value="Transferencia">Transferencia Bancaria</option>
+                        </select>
+                    </div>
+
+                    <button @onclick="Procesar" disabled="@cargando" class="btn w-100 py-3 text-white fw-bold"
+                            style="background-color: var(--color-otoño); border-radius: 15px; font-size: 1.1rem;">
+                        @if (cargando)
+                        {
+                            <span class="spinner-border spinner-border-sm"></span>
+                        }
+                        else
+                        {
+                            <span>Pagar Ahora</span>
+                        }
+                    </button>
+
+                    @if (!string.IsNullOrEmpty(mensaje))
+                    {
+                        <div class="alert @(exito ? "alert-success" : "alert-danger") mt-4 text-center">
+                            @mensaje
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int OrdenId { get; set; }
+    [Parameter] public decimal Monto { get; set; }
+
+    private CreatePagoDTO pagoModel = new();
+    private bool cargando = false;
+    private string mensaje = "";
+    private bool exito = false;
+
+    protected override void OnInitialized()
+    {
+        pagoModel.OrdenId = OrdenId;
+        pagoModel.Monto = Monto;
+        pagoModel.MetodoPago = "Tarjeta";
+    }
+
+    private async Task Procesar()
+    {
+        cargando = true;
+        mensaje = "";
+
+        var result = await PagoService.RegistrarPagoAsync(pagoModel);
+
+        if (result.Success)
+        {
+            exito = true;
+            mensaje = "¡Pago procesado con éxito! Gracias por tu preferencia.";
+           
+        }
+        else
+        {
+            exito = false;
+            mensaje = result.Message;
+        }
+        cargando = false;
+    }
+}

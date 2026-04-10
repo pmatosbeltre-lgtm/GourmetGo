@@ -69,4 +69,10 @@ public class ReservaRepositorio : IReservaRepositorio
             throw new Exception("Ocurrió un error al actualizar la reserva.", ex);
         }
     }
+    public async Task<IEnumerable<Reserva>> ObtenerPorUsuarioAsync(int usuarioId)
+    {
+        return await _context.Reservas
+            .Where(r => r.UsuarioId == usuarioId)
+            .ToListAsync();
+    }
 }

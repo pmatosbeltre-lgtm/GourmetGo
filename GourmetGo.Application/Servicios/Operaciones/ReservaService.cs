@@ -44,7 +44,6 @@ public class ReservaService : IReservaService
         
         return Result<ReservaDTO>.Ok(MapToDTO(reserva), "Reserva creada exitosamente.");
     }
-
     public async Task<Result<ReservaDTO>> ObtenerReservaPorIdAsync(int id)
     {
         if (id <= 0)
@@ -82,4 +81,16 @@ public class ReservaService : IReservaService
             RestauranteId = reserva.RestauranteId
         };
     }
+    public async Task<Result<List<ReservaDTO>>> ObtenerReservasPorUsuarioAsync(int usuarioId)
+    {
+        if (usuarioId <= 0)
+            return Result<List<ReservaDTO>>.Fail("El id del usuario es inválido.");
+
+        
+        var reservas = await _reservaRepositorio.ObtenerPorUsuarioAsync(usuarioId);
+
+        
+        return Result<List<ReservaDTO>>.Ok(reservas.Select(MapToDTO).ToList());
+    }
+
 }

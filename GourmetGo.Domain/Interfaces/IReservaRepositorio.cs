@@ -11,4 +11,5 @@ public interface IReservaRepositorio
     Task AgregarAsync(Reserva reserva);
 
     Task ActualizarAsync(Reserva reserva);
+    Task<IEnumerable<Reserva>> ObtenerPorUsuarioAsync(int usuarioId);
 }

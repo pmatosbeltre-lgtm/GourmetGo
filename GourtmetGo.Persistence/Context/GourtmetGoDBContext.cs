@@ -36,6 +36,7 @@ public class GourmetGoContext : DbContext
         modelBuilder.Entity<Notificacion>().ToTable("Notificaciones");
         modelBuilder.Entity<Reseña>().ToTable("Resena");
         modelBuilder.Entity<AuditoriaEntity>().ToTable("AuditoriaEntity");
+       
     }
 }
 

@@ -4,7 +4,7 @@ using GourmetGo.Application.Interfaces;
 using GourmetGo.Application.Dtos.Seguridad;
 using GourmetGo.Application.DTOs.Seguridad;
 
-namespace GourmetGo.Web.Controllers
+namespace GourmetGo.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
